@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Solution Brief — MV-OS Bundle</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --teal-50: #E1F5EE; --teal-400: #1D9E75; --teal-600: #0F6E56; --teal-800: #085041;
+    --amber-50: #FAEEDA; --amber-400: #BA7517; --amber-600: #854F0B; --amber-800: #633806;
+    --red-50: #FCEBEB; --red-400: #E24B4A; --red-600: #A32D2D;
+    --purple-50: #EEEDFE; --purple-400: #534AB7; --purple-600: #3C3489;
+    --gray-50: #F7F6F3; --gray-100: #EFEFEB; --gray-200: #D3D1C7;
+    --gray-400: #888780; --gray-600: #5F5E5A; --gray-800: #2C2C2A; --gray-900: #1A1A18;
+    --bg: #F4F3EF; --surface: #FAFAF8; --surface2: #FFFFFF;
+    --border: rgba(0,0,0,0.08); --border-strong: rgba(0,0,0,0.14);
+    --text-primary: #1A1A18; --text-secondary: #5F5E5A; --text-tertiary: #9C9A92;
+    --font-head: 'Sora', sans-serif;
+    --font-mono: 'DM Mono', monospace;
+    --radius-sm: 5px; --radius-md: 8px; --radius-lg: 12px; --radius-xl: 16px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: var(--font-head);
+    background: var(--bg);
+    color: var(--text-primary);
+    font-size: 14px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* ── APP SHELL ── */
+  .app { display: flex; flex-direction: column; min-height: 100vh; }
+
+  /* ── TOP BAR ── */
+  .topbar {
+    background: var(--gray-900);
+    color: #fff;
+    padding: 0 28px;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .topbar-left { display: flex; align-items: center; gap: 14px; }
+  .topbar-logo {
+    font-size: 12px; font-weight: 500; letter-spacing: 0.12em;
+    text-transform: uppercase; color: rgba(255,255,255,0.9);
+    font-family: var(--font-mono);
+  }
+  .topbar-sep { width: 1px; height: 18px; background: rgba(255,255,255,0.15); }
+  .topbar-module { font-size: 12px; color: rgba(255,255,255,0.45); font-family: var(--font-mono); }
+  .topbar-right { display: flex; align-items: center; gap: 8px; }
+  .topbar-badge {
+    font-size: 10px; font-family: var(--font-mono); font-weight: 500;
+    padding: 3px 8px; border-radius: 3px;
+    background: rgba(29,158,117,0.2); color: #5DCAA5;
+    border: 0.5px solid rgba(29,158,117,0.35);
+  }
+
+  /* ── MAIN LAYOUT ── */
+  .main { display: flex; flex: 1; }
+
+  /* ── SIDEBAR ── */
+  .sidebar {
+    width: 220px; flex-shrink: 0;
+    background: var(--gray-900);
+    border-right: 1px solid rgba(255,255,255,0.06);
+    padding: 20px 0;
+    display: flex; flex-direction: column; gap: 4px;
+  }
+  .sidebar-section-label {
+    font-size: 9px; font-weight: 500; letter-spacing: 0.12em;
+    text-transform: uppercase; color: rgba(255,255,255,0.25);
+    padding: 0 18px; margin: 12px 0 4px;
+    font-family: var(--font-mono);
+  }
+  .sidebar-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 18px; cursor: pointer;
+    font-size: 12px; color: rgba(255,255,255,0.45);
+    border-left: 2px solid transparent;
+    transition: all 0.15s;
+  }
+  .sidebar-item:hover { color: rgba(255,255,255,0.75); background: rgba(255,255,255,0.04); }
+  .sidebar-item.active {
+    color: #fff; border-left-color: var(--teal-400);
+    background: rgba(255,255,255,0.06);
+  }
+  .sidebar-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+  .dot-teal { background: var(--teal-400); }
+  .dot-amber { background: var(--amber-400); }
+  .dot-purple { background: var(--purple-400); }
+  .dot-gray { background: var(--gray-400); }
+  .sidebar-count {
+    margin-left: auto; font-size: 10px; font-family: var(--font-mono);
+    color: rgba(255,255,255,0.3);
+  }
+
+  /* ── CONTENT AREA ── */
+  .content { flex: 1; overflow: auto; padding: 28px 32px; }
+
+  /* ── PAGE HEADER ── */
+  .page-header { margin-bottom: 24px; }
+  .page-header-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 6px; }
+  .page-title { font-size: 20px; font-weight: 600; color: var(--text-primary); }
+  .page-meta { font-size: 12px; color: var(--text-tertiary); font-family: var(--font-mono); margin-top: 2px; }
+  .header-actions { display: flex; gap: 8px; }
+  .btn {
+    font-family: var(--font-head); font-size: 12px; font-weight: 500;
+    padding: 7px 14px; border-radius: var(--radius-md); cursor: pointer;
+    border: 0.5px solid var(--border-strong); transition: all 0.12s;
+  }
+  .btn-ghost { background: transparent; color: var(--text-secondary); }
+  .btn-ghost:hover { background: var(--gray-100); }
+  .btn-primary { background: var(--teal-400); color: #fff; border-color: var(--teal-400); }
+  .btn-primary:hover { background: var(--teal-600); }
+
+  /* ── TAB BAR ── */
+  .tabs { display: flex; gap: 0; border-bottom: 1px solid var(--border); margin-bottom: 22px; }
+  .tab {
+    font-size: 12px; font-weight: 500; padding: 10px 18px;
+    cursor: pointer; color: var(--text-tertiary);
+    border-bottom: 2px solid transparent; margin-bottom: -1px;
+    transition: all 0.12s; font-family: var(--font-head);
+  }
+  .tab:hover { color: var(--text-secondary); }
+  .tab.active { color: var(--teal-600); border-bottom-color: var(--teal-400); }
+
+  /* ── STAT STRIP ── */
+  .stat-strip { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-bottom: 22px; }
+  .stat-card {
+    background: var(--surface2); border: 0.5px solid var(--border);
+    border-radius: var(--radius-lg); padding: 14px 16px;
+  }
+  .stat-label { font-size: 10px; font-family: var(--font-mono); color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px; }
+  .stat-value { font-size: 22px; font-weight: 600; line-height: 1; }
+  .stat-sub { font-size: 11px; color: var(--text-tertiary); margin-top: 3px; }
+  .val-teal { color: var(--teal-400); }
+  .val-amber { color: var(--amber-400); }
+  .val-red { color: var(--red-400); }
+  .val-gray { color: var(--text-secondary); }
+
+  /* ── FILTER BAR ── */
+  .filter-bar { display: flex; gap: 8px; align-items: center; margin-bottom: 16px; }
+  .filter-input {
+    flex: 1; font-family: var(--font-head); font-size: 12px;
+    padding: 8px 12px; border-radius: var(--radius-md);
+    border: 0.5px solid var(--border-strong);
+    background: var(--surface2); color: var(--text-primary);
+    outline: none; transition: border 0.12s;
+  }
+  .filter-input:focus { border-color: var(--teal-400); }
+  .filter-select {
+    font-family: var(--font-head); font-size: 12px;
+    padding: 8px 10px; border-radius: var(--radius-md);
+    border: 0.5px solid var(--border-strong);
+    background: var(--surface2); color: var(--text-secondary);
+    outline: none; cursor: pointer;
+  }
+
+  /* ── TABLE ── */
+  .table-wrap { background: var(--surface2); border: 0.5px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; }
+  table { width: 100%; border-collapse: collapse; }
+  thead tr { background: var(--gray-50); }
+  th {
+    text-align: left; font-size: 10px; font-weight: 500;
+    font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--text-tertiary); padding: 11px 14px;
+    border-bottom: 0.5px solid var(--border);
+  }
+  td { padding: 12px 14px; border-bottom: 0.5px solid var(--border); font-size: 12px; vertical-align: middle; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--gray-50); }
+  .cell-mono { font-family: var(--font-mono); font-size: 11px; color: var(--text-secondary); }
+  .cell-primary { font-weight: 500; color: var(--text-primary); }
+  .cell-muted { color: var(--text-tertiary); font-size: 11px; }
+
+  /* ── STATUS BADGE ── */
+  .badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 10px; font-weight: 500; font-family: var(--font-mono);
+    padding: 3px 8px; border-radius: 3px; white-space: nowrap;
+  }
+  .badge-dot { width: 5px; height: 5px; border-radius: 50%; }
+  .badge-issued { background: var(--teal-50); color: var(--teal-600); }
+  .badge-issued .badge-dot { background: var(--teal-400); }
+  .badge-draft { background: var(--gray-100); color: var(--gray-600); }
+  .badge-draft .badge-dot { background: var(--gray-400); }
+  .badge-in_execution { background: var(--purple-50); color: var(--purple-600); }
+  .badge-in_execution .badge-dot { background: var(--purple-400); }
+  .badge-pending_approval { background: var(--amber-50); color: var(--amber-600); }
+  .badge-pending_approval .badge-dot { background: var(--amber-400); }
+  .badge-closed { background: var(--gray-100); color: var(--gray-400); }
+  .badge-closed .badge-dot { background: var(--gray-200); }
+  .badge-acknowledged { background: var(--teal-50); color: var(--teal-800); }
+  .badge-acknowledged .badge-dot { background: var(--teal-600); }
+
+  /* ── LOB BADGE ── */
+  .lob { font-size: 10px; font-family: var(--font-mono); padding: 2px 7px; border-radius: 3px; }
+  .lob-consulting { background: var(--purple-50); color: var(--purple-600); }
+  .lob-software { background: #E6F1FB; color: #185FA5; }
+  .lob-automation { background: var(--amber-50); color: var(--amber-800); }
+  .lob-cross_lob { background: var(--gray-100); color: var(--gray-600); }
+
+  /* ── SCOPE BADGE ── */
+  .scope { font-size: 10px; font-family: var(--font-mono); padding: 2px 7px; border-radius: 3px; }
+  .scope-major { background: var(--amber-50); color: var(--amber-600); }
+  .scope-minor { background: var(--gray-100); color: var(--gray-600); }
+
+  /* ── DETAIL PANEL ── */
+  .detail-panel {
+    display: none; position: fixed; right: 0; top: 52px;
+    width: 460px; height: calc(100vh - 52px);
+    background: var(--surface2); border-left: 1px solid var(--border-strong);
+    z-index: 50; overflow-y: auto; padding: 24px;
+    animation: slideIn 0.2s ease;
+  }
+  .detail-panel.open { display: block; }
+  @keyframes slideIn { from { transform: translateX(20px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+  .detail-close {
+    position: absolute; top: 16px; right: 18px;
+    cursor: pointer; font-size: 18px; color: var(--text-tertiary);
+    background: none; border: none; line-height: 1;
+  }
+  .detail-brief-num { font-family: var(--font-mono); font-size: 11px; color: var(--text-tertiary); margin-bottom: 4px; }
+  .detail-title { font-size: 16px; font-weight: 600; margin-bottom: 12px; line-height: 1.4; }
+  .detail-badges { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 18px; }
+  .detail-section { margin-bottom: 18px; }
+  .detail-section-label {
+    font-size: 9px; font-weight: 500; text-transform: uppercase;
+    letter-spacing: 0.1em; color: var(--text-tertiary);
+    font-family: var(--font-mono); margin-bottom: 8px;
+    padding-bottom: 6px; border-bottom: 0.5px solid var(--border);
+  }
+  .detail-field { display: flex; gap: 12px; margin-bottom: 8px; font-size: 12px; }
+  .detail-field-label { min-width: 130px; color: var(--text-tertiary); flex-shrink: 0; }
+  .detail-field-value { color: var(--text-primary); font-weight: 500; }
+  .detail-steps { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+  .detail-step {
+    display: flex; gap: 10px; align-items: flex-start;
+    padding: 10px 12px; background: var(--gray-50);
+    border-radius: var(--radius-md); font-size: 12px;
+    border: 0.5px solid var(--border);
+  }
+  .step-num {
+    min-width: 20px; height: 20px; border-radius: 50%;
+    background: var(--teal-50); color: var(--teal-600);
+    font-size: 10px; font-weight: 500; font-family: var(--font-mono);
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .open-item {
+    background: var(--amber-50); border: 0.5px solid rgba(186,117,23,0.3);
+    border-radius: var(--radius-md); padding: 9px 12px;
+    font-size: 11px; color: var(--amber-800); font-family: var(--font-mono);
+  }
+  .action-row { display: flex; gap: 8px; margin-top: 20px; padding-top: 16px; border-top: 0.5px solid var(--border); }
+
+  /* ── SST SCHEMA VIEW ── */
+  .schema-section { margin-bottom: 28px; }
+  .schema-table-name {
+    display: flex; align-items: center; gap: 10px; margin-bottom: 10px;
+  }
+  .schema-table-label {
+    font-family: var(--font-mono); font-size: 13px; font-weight: 500;
+    color: var(--text-primary);
+  }
+  .schema-table-desc { font-size: 12px; color: var(--text-tertiary); }
+  .schema-wrap { background: var(--surface2); border: 0.5px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; margin-bottom: 16px; }
+  .schema-wrap table th { background: var(--gray-900); color: rgba(255,255,255,0.5); }
+  .schema-wrap table td { font-family: var(--font-mono); font-size: 11px; }
+  .col-name-cell { color: var(--teal-600); font-weight: 500; }
+  .col-type-cell { color: #185FA5; }
+  .col-constraint-cell { color: var(--text-tertiary); font-size: 10px; }
+  .col-note-cell { font-family: var(--font-head); font-size: 11px; color: var(--text-secondary); }
+  .pk-badge { font-size: 9px; background: var(--amber-50); color: var(--amber-600); padding: 1px 5px; border-radius: 3px; font-family: var(--font-mono); margin-left: 4px; }
+  .fk-badge { font-size: 9px; background: var(--purple-50); color: var(--purple-600); padding: 1px 5px; border-radius: 3px; font-family: var(--font-mono); margin-left: 4px; }
+  .rel-line {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 11px; font-family: var(--font-mono);
+    color: var(--text-tertiary); padding: 6px 0;
+    border-bottom: 0.5px solid var(--border);
+  }
+  .rel-line:last-child { border-bottom: none; }
+  .rel-from { color: var(--teal-600); }
+  .rel-to { color: #185FA5; }
+  .rel-arrow { color: var(--text-tertiary); }
+
+  /* ── MV TEAM VIEW ── */
+  .task-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+  .task-card {
+    background: var(--surface2); border: 0.5px solid var(--border);
+    border-radius: var(--radius-lg); padding: 16px;
+    cursor: pointer; transition: all 0.15s;
+  }
+  .task-card:hover { border-color: var(--teal-400); box-shadow: 0 0 0 3px rgba(29,158,117,0.08); }
+  .task-card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+  .task-card-num { font-family: var(--font-mono); font-size: 10px; color: var(--text-tertiary); }
+  .task-card-title { font-size: 13px; font-weight: 500; margin-bottom: 6px; line-height: 1.4; }
+  .task-card-meta { font-size: 11px; color: var(--text-tertiary); }
+  .task-progress { margin-top: 12px; }
+  .progress-label { display: flex; justify-content: space-between; font-size: 10px; font-family: var(--font-mono); color: var(--text-tertiary); margin-bottom: 5px; }
+  .progress-bar { height: 3px; background: var(--gray-100); border-radius: 2px; }
+  .progress-fill { height: 3px; background: var(--teal-400); border-radius: 2px; transition: width 0.4s ease; }
+
+  /* ── PANEL OVERLAY ── */
+  .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.18); z-index: 49; }
+  .overlay.open { display: block; }
+
+  /* ── EMPTY STATE ── */
+  .empty-state { text-align: center; padding: 48px 20px; color: var(--text-tertiary); font-size: 13px; }
+
+  /* ── HIDDEN ── */
+  .view { display: none; }
+  .view.active { display: block; }
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="topbar-left">
+    <div class="topbar-logo">MV-OS</div>
+    <div class="topbar-sep"></div>
+    <div class="topbar-module">solution-brief.registry</div>
+  </div>
+  <div class="topbar-right">
+    <div class="topbar-badge">The Consultant</div>
+    <div class="topbar-badge" style="background:rgba(83,74,183,0.2);color:#AFA9EC;border-color:rgba(83,74,183,0.35)">COS v1.0</div>
+  </div>
+</div>
+
+<div class="main">
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <div class="sidebar-section-label">Views</div>
+  <div class="sidebar-item active" onclick="switchSidebar(this,'lob-view')">
+    <div class="sidebar-dot dot-teal"></div>
+    <span>LOB lead view</span>
+  </div>
+  <div class="sidebar-item" onclick="switchSidebar(this,'mv-view')">
+    <div class="sidebar-dot dot-purple"></div>
+    <span>MV team view</span>
+  </div>
+  <div class="sidebar-item" onclick="switchSidebar(this,'sst-view')">
+    <div class="sidebar-dot dot-amber"></div>
+    <span>SST schema</span>
+  </div>
+
+  <div class="sidebar-section-label">Filter by LOB</div>
+  <div class="sidebar-item" id="lob-all" onclick="filterLOB('all',this)">
+    <div class="sidebar-dot dot-gray"></div>
+    <span>All LOBs</span>
+    <span class="sidebar-count" id="count-all">8</span>
+  </div>
+  <div class="sidebar-item" id="lob-consulting" onclick="filterLOB('consulting',this)">
+    <div class="sidebar-dot dot-purple"></div>
+    <span>Consulting</span>
+    <span class="sidebar-count" id="count-consulting">3</span>
+  </div>
+  <div class="sidebar-item" id="lob-software" onclick="filterLOB('software',this)">
+    <div class="sidebar-dot" style="background:#378ADD"></div>
+    <span>Software</span>
+    <span class="sidebar-count" id="count-software">2</span>
+  </div>
+  <div class="sidebar-item" id="lob-automation" onclick="filterLOB('automation',this)">
+    <div class="sidebar-dot dot-amber"></div>
+    <span>Automation SI</span>
+    <span class="sidebar-count" id="count-automation">2</span>
+  </div>
+  <div class="sidebar-item" id="lob-cross_lob" onclick="filterLOB('cross_lob',this)">
+    <div class="sidebar-dot dot-gray"></div>
+    <span>Cross-LOB</span>
+    <span class="sidebar-count" id="count-cross_lob">1</span>
+  </div>
+</div>
+
+<!-- CONTENT -->
+<div class="content">
+
+  <!-- ── LOB LEAD VIEW ── -->
+  <div class="view active" id="lob-view">
+    <div class="page-header">
+      <div class="page-header-top">
+        <div>
+          <div class="page-title">Solution Brief registry</div>
+          <div class="page-meta">LOB Lead view · workflow detail · all issued briefs</div>
+        </div>
+        <div class="header-actions">
+          <button class="btn btn-ghost">Export</button>
+          <button class="btn btn-primary">+ New brief</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="stat-strip">
+      <div class="stat-card">
+        <div class="stat-label">Total</div>
+        <div class="stat-value val-gray" id="stat-total">8</div>
+        <div class="stat-sub">all briefs</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Issued</div>
+        <div class="stat-value val-teal" id="stat-issued">3</div>
+        <div class="stat-sub">awaiting ack.</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">In execution</div>
+        <div class="stat-value val-gray" id="stat-execution">2</div>
+        <div class="stat-sub">active</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Pending approval</div>
+        <div class="stat-value val-amber" id="stat-pending">1</div>
+        <div class="stat-sub">owner required</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Draft</div>
+        <div class="stat-value val-gray" id="stat-draft">2</div>
+        <div class="stat-sub">not yet issued</div>
+      </div>
+    </div>
+
+    <div class="filter-bar">
+      <input class="filter-input" type="text" placeholder="Search by brief number, title, or problem statement..." oninput="filterTable(this.value)">
+      <select class="filter-select" onchange="filterStatus(this.value)">
+        <option value="">All statuses</option>
+        <option value="draft">Draft</option>
+        <option value="issued">Issued</option>
+        <option value="acknowledged">Acknowledged</option>
+        <option value="in_execution">In execution</option>
+        <option value="pending_approval">Pending approval</option>
+        <option value="closed">Closed</option>
+      </select>
+      <select class="filter-select" onchange="filterScope(this.value)">
+        <option value="">All scopes</option>
+        <option value="major">Major</option>
+        <option value="minor">Minor</option>
+      </select>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Brief no.</th>
+            <th>Problem statement</th>
+            <th>LOB</th>
+            <th>Change scope</th>
+            <th>Status</th>
+            <th>Version</th>
+            <th>Issued</th>
+            <th>Lead</th>
+          </tr>
+        </thead>
+        <tbody id="brief-table-body"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ── MV TEAM VIEW ── -->
+  <div class="view" id="mv-view">
+    <div class="page-header">
+      <div class="page-header-top">
+        <div>
+          <div class="page-title">My active briefs</div>
+          <div class="page-meta">MV team view · execution panel · assigned to me</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="stat-strip" style="grid-template-columns: repeat(3,1fr)">
+      <div class="stat-card">
+        <div class="stat-label">Assigned to me</div>
+        <div class="stat-value val-teal">4</div>
+        <div class="stat-sub">active briefs</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Overdue steps</div>
+        <div class="stat-value val-amber">1</div>
+        <div class="stat-sub">needs attention</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Completed this month</div>
+        <div class="stat-value val-gray">3</div>
+        <div class="stat-sub">closed out</div>
+      </div>
+    </div>
+
+    <div class="task-grid" id="task-grid"></div>
+  </div>
+
+  <!-- ── SST SCHEMA VIEW ── -->
+  <div class="view" id="sst-view">
+    <div class="page-header">
+      <div class="page-header-top">
+        <div>
+          <div class="page-title">SST schema — solution briefs</div>
+          <div class="page-meta">PostgreSQL · 3NF · COS v1.0 · single source of truth</div>
+        </div>
+        <div class="header-actions">
+          <button class="btn btn-ghost" onclick="copySQL()">Copy SQL</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Table: solution_briefs -->
+    <div class="schema-section">
+      <div class="schema-table-name">
+        <div class="schema-table-label">solution_briefs</div>
+        <div class="schema-table-desc">— core entity. one row per brief.</div>
+      </div>
+      <div class="schema-wrap">
+        <table>
+          <thead><tr><th>column</th><th>type</th><th>constraint</th><th>note</th></tr></thead>
+          <tbody>
+            <tr><td class="col-name-cell">id<span class="pk-badge">PK</span></td><td class="col-type-cell">UUID</td><td class="col-constraint-cell">DEFAULT gen_random_uuid()</td><td class="col-note-cell">Immutable identifier</td></tr>
+            <tr><td class="col-name-cell">brief_number</td><td class="col-type-cell">VARCHAR(20)</td><td class="col-constraint-cell">UNIQUE NOT NULL</td><td class="col-note-cell">Human-readable SB-YYYY-NNN</td></tr>
+            <tr><td class="col-name-cell">requirement_brief_id<span class="fk-badge">FK</span></td><td class="col-type-cell">UUID</td><td class="col-constraint-cell">FK → requirement_briefs.id</td><td class="col-note-cell">Triggering RB — required</td></tr>
+            <tr><td class="col-name-cell">parent_brief_id<span class="fk-badge">FK</span></td><td class="col-type-cell">UUID</td><td class="col-constraint-cell">FK → solution_briefs.id NULLABLE</td><td class="col-note-cell">Set on revision; null for v1.0</td></tr>
+            <tr><td class="col-name-cell">version</td><td class="col-type-cell">VARCHAR(10)</td><td class="col-constraint-cell">NOT NULL DEFAULT '1.0'</td><td class="col-note-cell">Increments as 1.1, 1.2 etc.</td></tr>
+            <tr><td class="col-name-cell">lob_scope</td><td class="col-type-cell">VARCHAR(20)</td><td class="col-constraint-cell">CHECK IN ('consulting','software','automation','cross_lob')</td><td class="col-note-cell">LOB classification</td></tr>
+            <tr><td class="col-name-cell">change_scope</td><td class="col-type-cell">VARCHAR(10)</td><td class="col-constraint-cell">CHECK IN ('major','minor') NOT NULL</td><td class="col-note-cell">Determines approval path</td></tr>
+            <tr><td class="col-name-cell">status</td><td class="col-type-cell">VARCHAR(20)</td><td class="col-constraint-cell">CHECK IN ('draft','issued','acknowledged','in_execution','closed','pending_approval')</td><td class="col-note-cell">Workflow state machine</td></tr>
+            <tr><td class="col-name-cell">problem_statement</td><td class="col-type-cell">TEXT</td><td class="col-constraint-cell">NOT NULL</td><td class="col-note-cell">Consultant restatement</td></tr>
+            <tr><td class="col-name-cell">recommended_workflow</td><td class="col-type-cell">TEXT</td><td class="col-constraint-cell">NOT NULL</td><td class="col-note-cell">Prescribed SOP or change</td></tr>
+            <tr><td class="col-name-cell">rationale</td><td class="col-type-cell">TEXT</td><td class="col-constraint-cell">NOT NULL</td><td class="col-note-cell">Why this solution</td></tr>
+            <tr><td class="col-name-cell">expected_outcome</td><td class="col-type-cell">TEXT</td><td class="col-constraint-cell"></td><td class="col-note-cell">Measurable success criteria</td></tr>
+            <tr><td class="col-name-cell">has_open_items</td><td class="col-type-cell">BOOLEAN</td><td class="col-constraint-cell">DEFAULT FALSE</td><td class="col-note-cell">Computed flag from open_items table</td></tr>
+            <tr><td class="col-name-cell">owner_approval_required</td><td class="col-type-cell">BOOLEAN</td><td class="col-constraint-cell">DEFAULT FALSE</td><td class="col-note-cell">TRUE when change_scope = major</td></tr>
+            <tr><td class="col-name-cell">owner_approved_at</td><td class="col-type-cell">TIMESTAMPTZ</td><td class="col-constraint-cell">NULLABLE</td><td class="col-note-cell">Null until Owner signs</td></tr>
+            <tr><td class="col-name-cell">consultant_lead_id<span class="fk-badge">FK</span></td><td class="col-type-cell">UUID</td><td class="col-constraint-cell">FK → users.id NOT NULL</td><td class="col-note-cell">Sign-off authority</td></tr>
+            <tr><td class="col-name-cell">issued_at</td><td class="col-type-cell">TIMESTAMPTZ</td><td class="col-constraint-cell">NULLABLE</td><td class="col-note-cell">Set when status → issued</td></tr>
+            <tr><td class="col-name-cell">acknowledged_at</td><td class="col-type-cell">TIMESTAMPTZ</td><td class="col-constraint-cell">NULLABLE</td><td class="col-note-cell">Set when MV acknowledges</td></tr>
+            <tr><td class="col-name-cell">closed_at</td><td class="col-type-cell">TIMESTAMPTZ</td><td class="col-constraint-cell">NULLABLE</td><td class="col-note-cell">Set when execution complete</td></tr>
+            <tr><td class="col-name-cell">created_by<span class="fk-badge">FK</span></td><td class="col-type-cell">UUID</td><td class="col-constraint-cell">FK → users.id NOT NULL</td><td class="col-note-cell">Consultant agent/user</td></tr>
+            <tr><td class="col-name-cell">created_at</td><td class="col-type-cell">TIMESTAMPTZ</td><td class="col-constraint-cell">DEFAULT NOW()</td><td class="col-note-cell">Auto-set</td></tr>
+            <tr><td class="col-name-cell">updated_at</td><td class="col-type-cell">TIMESTAMPTZ</td><td class="col-constraint-cell">DEFAULT NOW()</td><td class="col-note-cell">Trigger-updated on any change</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Table: brief_implementation_steps -->
+    <div class="schema-section">
+      <div class="schema-table-name">
+        <div class="schema-table-label">brief_implementation_steps</div>
+        <div class="schema-table-desc">— ordered steps. child of solution_briefs.</div>
+      </div>
+      <div class="schema-wrap">
+        <table>
+          <thead><tr><th>column</th><th>type</th><th>constraint</th><th>note</th></tr></thead>
+          <tbody>
+            <tr><td class="col-name-cell">id<span class="pk-badge">PK</span></td><td class="col-type-cell">UUID</td><td class="col-constraint-cell">DEFAULT gen_random_uuid()</td><td class="col-note-cell"></td></tr>
+            <tr><td class="col-name-cell">brief_id<span class="fk-badge">FK</span></td><td class="col-type-cell">UUID</td><td class="col-constraint-cell">FK → solution_briefs.id ON DELETE CASCADE</td><td class="col-note-cell">Parent brief</td></tr>
+            <tr><td class="col-name-cell">step_order</td><td class="col-type-cell">INTEGER</td><td class="col-constraint-cell">NOT NULL</td><td class="col-note-cell">1-based sequence</td></tr>
+            <tr><td class="col-name-cell">description</td><td class="col-type-cell">TEXT</td><td class="col-constraint-cell">NOT NULL</td><td class="col-note-cell">What MV must do</td></tr>
+            <tr><td class="col-name-cell">assigned_lob</td><td class="col-type-cell">VARCHAR(20)</td><td class="col-constraint-cell">CHECK IN ('consulting','software','automation')</td><td class="col-note-cell">Which team executes this step</td></tr>
+            <tr><td class="col-name-cell">status</td><td class="col-type-cell">VARCHAR(20)</td><td class="col-constraint-cell">CHECK IN ('pending','in_progress','complete','blocked')</td><td class="col-note-cell">Step-level execution state</td></tr>
+            <tr><td class="col-name-cell">completed_at</td><td class="col-type-cell">TIMESTAMPTZ</td><td class="col-constraint-cell">NULLABLE</td><td class="col-note-cell">Set when status → complete</td></tr>
+            <tr><td class="col-name-cell">created_at</td><td class="col-type-cell">TIMESTAMPTZ</td><td class="col-constraint-cell">DEFAULT NOW()</td><td class="col-note-cell"></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Table: brief_open_items -->
+    <div class="schema-section">
+      <div class="schema-table-name">
+        <div class="schema-table-label">brief_open_items</div>
+        <div class="schema-table-desc">— unresolved [OPEN ITEM] tags attached to a brief.</div>
+      </div>
+      <div class="schema-wrap">
+        <table>
+          <thead><tr><th>column</th><th>type</th><th>constraint</th><th>note</th></tr></thead>
+          <tbody>
+            <tr><td class="col-name-cell">id<span class="pk-badge">PK</span></td><td class="col-type-cell">UUID</td><td class="col-constraint-cell">DEFAULT gen_random_uuid()</td><td class="col-note-cell"></td></tr>
+            <tr><td class="col-name-cell">brief_id<span class="fk-badge">FK</span></td><td class="col-type-cell">UUID</td><td class="col-constraint-cell">FK → solution_briefs.id ON DELETE CASCADE</td><td class="col-note-cell"></td></tr>
+            <tr><td class="col-name-cell">description</td><td class="col-type-cell">TEXT</td><td class="col-constraint-cell">NOT NULL</td><td class="col-note-cell">The unresolved dependency</td></tr>
+            <tr><td class="col-name-cell">resolution_status</td><td class="col-type-cell">VARCHAR(20)</td><td class="col-constraint-cell">CHECK IN ('open','resolved','escalated') DEFAULT 'open'</td><td class="col-note-cell"></td></tr>
+            <tr><td class="col-name-cell">resolved_at</td><td class="col-type-cell">TIMESTAMPTZ</td><td class="col-constraint-cell">NULLABLE</td><td class="col-note-cell"></td></tr>
+            <tr><td class="col-name-cell">created_at</td><td class="col-type-cell">TIMESTAMPTZ</td><td class="col-constraint-cell">DEFAULT NOW()</td><td class="col-note-cell"></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Relationships -->
+    <div class="schema-section">
+      <div class="schema-table-name">
+        <div class="schema-table-label">key relationships</div>
+      </div>
+      <div class="schema-wrap" style="padding: 14px 16px;">
+        <div class="rel-line"><span class="rel-from">solution_briefs</span><span class="rel-arrow">N:1 →</span><span class="rel-to">requirement_briefs</span><span style="color:var(--text-tertiary);font-size:11px;margin-left:8px">one RB triggers one SB (or revision chain)</span></div>
+        <div class="rel-line"><span class="rel-from">solution_briefs</span><span class="rel-arrow">1:N →</span><span class="rel-to">brief_implementation_steps</span><span style="color:var(--text-tertiary);font-size:11px;margin-left:8px">cascade delete on brief removal</span></div>
+        <div class="rel-line"><span class="rel-from">solution_briefs</span><span class="rel-arrow">1:N →</span><span class="rel-to">brief_open_items</span><span style="color:var(--text-tertiary);font-size:11px;margin-left:8px">cascade delete on brief removal</span></div>
+        <div class="rel-line"><span class="rel-from">solution_briefs</span><span class="rel-arrow">self →</span><span class="rel-to">solution_briefs (parent_brief_id)</span><span style="color:var(--text-tertiary);font-size:11px;margin-left:8px">revision chain — v1.0, v1.1, v1.2</span></div>
+        <div class="rel-line"><span class="rel-from">solution_briefs</span><span class="rel-arrow">N:1 →</span><span class="rel-to">users (consultant_lead_id)</span><span style="color:var(--text-tertiary);font-size:11px;margin-left:8px">sign-off authority per brief</span></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>
+</div>
+
+<!-- DETAIL PANEL OVERLAY -->
+<div class="overlay" id="overlay" onclick="closeDetail()"></div>
+
+<!-- DETAIL PANEL -->
+<div class="detail-panel" id="detail-panel">
+  <button class="detail-close" onclick="closeDetail()">×</button>
+  <div id="detail-content"></div>
+</div>
+
+<script>
+const BRIEFS = [
+  {
+    id:'sb-001', brief_number:'SB-2025-001', lob_scope:'consulting',
+    change_scope:'minor', status:'issued', version:'1.0',
+    problem_statement:'Feasibility study process lacks a standardized output format, causing inconsistent deliverables across client engagements.',
+    recommended_workflow:'Adopt the MV Feasibility Study Standard Template v1.0 with mandatory sections: scope, findings, risk register, recommendation.',
+    rationale:'Standardization reduces rework, enables audit trail, and sets client expectations consistently.',
+    expected_outcome:'100% of feasibility studies produced in standard format within 30 days of issue.',
+    issued_at:'2025-01-08', consultant_lead:'Consultant Lead',
+    steps:['Review and download the Feasibility Study Standard Template v1.0','Brief the Consulting team on mandatory sections','Apply template to all active and new engagements','Log first usage to Execution Log and send to Auditor'],
+    open_items:[]
+  },
+  {
+    id:'sb-002', brief_number:'SB-2025-002', lob_scope:'software',
+    change_scope:'major', status:'pending_approval', version:'1.0',
+    problem_statement:'Reusable service library has no governance policy — services are added ad hoc with no review, versioning, or deprecation process.',
+    recommended_workflow:'Introduce a Service Lifecycle Policy: proposal → review → approved → deprecated. All new services require Software Lead sign-off.',
+    rationale:'Without governance, the library becomes a liability. Structured lifecycle prevents breaking changes from reaching production.',
+    expected_outcome:'All services in library carry a lifecycle status tag within 60 days. Zero unreviewed additions after policy is live.',
+    issued_at:'2025-01-14', consultant_lead:'Consultant Lead',
+    steps:['Owner to approve Service Lifecycle Policy (MAJOR change — pending)','Software Lead to audit current library and tag each service','Publish lifecycle status to team','Enforce review gate for all future additions'],
+    open_items:['Owner approval required before this brief can be issued to MV']
+  },
+  {
+    id:'sb-003', brief_number:'SB-2025-003', lob_scope:'automation',
+    change_scope:'minor', status:'in_execution', version:'1.0',
+    problem_statement:'PLC naming conventions are inconsistent across projects — variable names differ between engineers causing handoff friction.',
+    recommended_workflow:'Adopt MV PLC Naming Standard v1.0: prefix by function group, suffix by instance number. Applies to all new and active projects.',
+    rationale:'Consistent naming reduces commissioning errors, speeds onboarding, and makes Auditor review tractable.',
+    expected_outcome:'All new PLC projects use standard naming from date of acknowledgement. Existing projects migrated within 90 days.',
+    issued_at:'2025-01-10', consultant_lead:'Consultant Lead',
+    steps:['Automation Lead to distribute PLC Naming Standard v1.0 to team','Apply to all projects started after 2025-01-10','Flag legacy projects for migration sprint','Log compliance to Execution Log weekly'],
+    open_items:[]
+  },
+  {
+    id:'sb-004', brief_number:'SB-2025-004', lob_scope:'cross_lob',
+    change_scope:'major', status:'draft', version:'1.0',
+    problem_statement:'Cross-LOB projects have no defined coordination owner — Consulting, Software, and Automation work in silos on shared deliverables.',
+    recommended_workflow:'Designate a Cross-LOB Coordinator role for any project spanning 2+ LOBs. Owner nominates. Coordinator runs weekly sync and owns the joint Execution Log.',
+    rationale:'Without a single coordination point, cross-LOB projects accumulate unresolved dependencies. A named coordinator creates accountability.',
+    expected_outcome:'All active cross-LOB projects have a nominated Coordinator within 14 days of Owner approval.',
+    issued_at:null, consultant_lead:'Consultant Lead',
+    steps:['Owner to approve Cross-LOB Coordinator role definition (MAJOR)','Owner to nominate Coordinator for each active cross-LOB project','Coordinator to establish weekly sync cadence','Joint Execution Log template to be created by The Consultant'],
+    open_items:['Cross-LOB coordination protocol not yet finalized — [OPEN ITEM]','Owner approval required before issuance']
+  },
+  {
+    id:'sb-005', brief_number:'SB-2025-005', lob_scope:'consulting',
+    change_scope:'minor', status:'acknowledged', version:'1.1',
+    problem_statement:'Lean workshop SOP does not define pre-work requirements — workshops start without aligned stakeholders.',
+    recommended_workflow:'Add mandatory pre-work checklist to Lean Workshop SOP: stakeholder alignment session, problem statement sign-off, data collection checklist.',
+    rationale:'Pre-work failures are the leading cause of workshop restarts per Audit Finding AF-2024-012.',
+    expected_outcome:'Zero workshops initiated without completed pre-work checklist from date of acknowledgement.',
+    issued_at:'2025-01-05', consultant_lead:'Consultant Lead',
+    steps:['Consulting Lead to update Lean Workshop SOP with pre-work checklist section','Distribute updated SOP to Consulting team','Apply to all workshops scheduled after 2025-01-12','Auditor to verify compliance at next scheduled review'],
+    open_items:[]
+  },
+  {
+    id:'sb-006', brief_number:'SB-2025-006', lob_scope:'software',
+    change_scope:'minor', status:'in_execution', version:'1.0',
+    problem_statement:'No code review standard exists — pull request quality is inconsistent and depends on individual reviewer judgment.',
+    recommended_workflow:'Adopt MV Code Review Standard v1.0: mandatory checklist, two-reviewer minimum for production services, 48h SLA.',
+    rationale:'Code review standards reduce defect escape rate and distribute knowledge across the Software team.',
+    expected_outcome:'All PRs to production services reviewed against standard checklist within 30 days.',
+    issued_at:'2025-01-12', consultant_lead:'Consultant Lead',
+    steps:['Software Lead to publish Code Review Standard v1.0 in team wiki','Configure PR template in version control system','Enforce two-reviewer rule for all production service PRs','Log first month compliance rate to Execution Log'],
+    open_items:[]
+  },
+  {
+    id:'sb-007', brief_number:'SB-2025-007', lob_scope:'automation',
+    change_scope:'minor', status:'closed', version:'1.0',
+    problem_statement:'Electrical design checklist was informal and stored only in individual engineer files — no single authoritative version.',
+    recommended_workflow:'Centralize Electrical Design Checklist in Workflow Library. Version-controlled. Mandatory sign-off by Automation Lead before any electrical design is submitted to client.',
+    rationale:'Centralization ensures all engineers use the same version and creates an audit trail per design.',
+    expected_outcome:'Checklist centralized and all active designs using library version within 14 days.',
+    issued_at:'2024-12-20', consultant_lead:'Consultant Lead',
+    steps:['Automation Lead to upload canonical checklist to Workflow Library','Archive all individual copies','Announce library version as the only authorized version','Auditor to verify at next design review'],
+    open_items:[]
+  },
+  {
+    id:'sb-008', brief_number:'SB-2025-008', lob_scope:'consulting',
+    change_scope:'minor', status:'draft', version:'1.0',
+    problem_statement:'Operational Excellence engagement deliverable format is not standardized — clients receive different output structures.',
+    recommended_workflow:'Define OpEx Deliverable Standard: executive summary, current state map, gap analysis, initiative roadmap, KPI baseline. Mandatory for all OpEx engagements.',
+    rationale:'Standardized deliverables improve client perception and enable cross-engagement benchmarking.',
+    expected_outcome:'All new OpEx engagements use standard format. First audit at 60 days.',
+    issued_at:null, consultant_lead:'Consultant Lead',
+    steps:['Consultant Lead to draft OpEx Deliverable Standard template','Review with Consulting team','Upload to Workflow Library','Apply to all active and new OpEx engagements'],
+    open_items:[]
+  },
+];
+
+let activeFilter = { text:'', status:'', scope:'', lob:'all' };
+
+function renderTable() {
+  const tbody = document.getElementById('brief-table-body');
+  const filtered = BRIEFS.filter(b => {
+    const t = activeFilter.text.toLowerCase();
+    const textMatch = !t || b.brief_number.toLowerCase().includes(t) || b.problem_statement.toLowerCase().includes(t);
+    const statusMatch = !activeFilter.status || b.status === activeFilter.status;
+    const scopeMatch = !activeFilter.scope || b.change_scope === activeFilter.scope;
+    const lobMatch = activeFilter.lob === 'all' || b.lob_scope === activeFilter.lob;
+    return textMatch && statusMatch && scopeMatch && lobMatch;
+  });
+
+  document.getElementById('stat-total').textContent = filtered.length;
+  document.getElementById('stat-issued').textContent = filtered.filter(b=>b.status==='issued').length;
+  document.getElementById('stat-execution').textContent = filtered.filter(b=>b.status==='in_execution').length;
+  document.getElementById('stat-pending').textContent = filtered.filter(b=>b.status==='pending_approval').length;
+  document.getElementById('stat-draft').textContent = filtered.filter(b=>b.status==='draft').length;
+
+  if (!filtered.length) {
+    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:32px;color:var(--text-tertiary);font-size:13px">No briefs match the current filter</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = filtered.map(b => `
+    <tr onclick="openDetail('${b.id}')" style="cursor:pointer">
+      <td class="cell-mono">${b.brief_number}</td>
+      <td class="cell-primary" style="max-width:280px">${b.problem_statement.substring(0,80)}${b.problem_statement.length>80?'…':''}</td>
+      <td><span class="lob lob-${b.lob_scope}">${b.lob_scope.replace('_','-')}</span></td>
+      <td><span class="scope scope-${b.change_scope}">${b.change_scope}</span></td>
+      <td>${badgeHTML(b.status)}</td>
+      <td class="cell-mono">v${b.version}</td>
+      <td class="cell-muted">${b.issued_at || '—'}</td>
+      <td class="cell-muted">${b.consultant_lead}</td>
+    </tr>
+  `).join('');
+}
+
+function badgeHTML(status) {
+  const labels = {draft:'Draft',issued:'Issued',acknowledged:'Acknowledged',in_execution:'In execution',pending_approval:'Pending approval',closed:'Closed'};
+  return `<span class="badge badge-${status}"><span class="badge-dot"></span>${labels[status]||status}</span>`;
+}
+
+function openDetail(id) {
+  const b = BRIEFS.find(x=>x.id===id);
+  if (!b) return;
+  const hasOpen = b.open_items.length > 0;
+  document.getElementById('detail-content').innerHTML = `
+    <div class="detail-brief-num">${b.brief_number} · v${b.version}</div>
+    <div class="detail-title">${b.problem_statement.substring(0,90)}${b.problem_statement.length>90?'…':''}</div>
+    <div class="detail-badges">
+      ${badgeHTML(b.status)}
+      <span class="lob lob-${b.lob_scope}">${b.lob_scope.replace('_','-')}</span>
+      <span class="scope scope-${b.change_scope}">${b.change_scope}</span>
+      ${hasOpen?'<span class="badge" style="background:var(--amber-50);color:var(--amber-600)"><span class="badge-dot" style="background:var(--amber-400)"></span>open items</span>':''}
+    </div>
+    <div class="detail-section">
+      <div class="detail-section-label">Problem statement</div>
+      <div style="font-size:13px;line-height:1.6;color:var(--text-primary)">${b.problem_statement}</div>
+    </div>
+    <div class="detail-section">
+      <div class="detail-section-label">Recommended workflow</div>
+      <div style="font-size:13px;line-height:1.6;color:var(--text-secondary)">${b.recommended_workflow}</div>
+    </div>
+    <div class="detail-section">
+      <div class="detail-section-label">Rationale</div>
+      <div style="font-size:13px;line-height:1.6;color:var(--text-secondary)">${b.rationale}</div>
+    </div>
+    <div class="detail-section">
+      <div class="detail-section-label">Implementation steps</div>
+      <ul class="detail-steps">
+        ${b.steps.map((s,i)=>`<li class="detail-step"><div class="step-num">${i+1}</div><span>${s}</span></li>`).join('')}
+      </ul>
+    </div>
+    ${b.expected_outcome?`<div class="detail-section"><div class="detail-section-label">Expected outcome</div><div style="font-size:13px;line-height:1.6;color:var(--text-secondary)">${b.expected_outcome}</div></div>`:''}
+    ${hasOpen?`<div class="detail-section"><div class="detail-section-label">Open items</div>${b.open_items.map(o=>`<div class="open-item">[OPEN ITEM] ${o}</div>`).join('')}</div>`:''}
+    <div class="detail-section">
+      <div class="detail-section-label">Document metadata</div>
+      <div class="detail-field"><span class="detail-field-label">Originating agency</span><span class="detail-field-value">The Consultant</span></div>
+      <div class="detail-field"><span class="detail-field-label">Receiving agency</span><span class="detail-field-value">Machine Vision</span></div>
+      <div class="detail-field"><span class="detail-field-label">Consultant Lead</span><span class="detail-field-value">${b.consultant_lead}</span></div>
+      <div class="detail-field"><span class="detail-field-label">Issued date</span><span class="detail-field-value">${b.issued_at||'Not yet issued'}</span></div>
+      <div class="detail-field"><span class="detail-field-label">Version</span><span class="detail-field-value">v${b.version}</span></div>
+    </div>
+    <div class="action-row">
+      <button class="btn btn-ghost" style="flex:1">Log to Execution</button>
+      <button class="btn btn-primary" style="flex:1">Acknowledge brief</button>
+    </div>
+  `;
+  document.getElementById('detail-panel').classList.add('open');
+  document.getElementById('overlay').classList.add('open');
+}
+
+function closeDetail() {
+  document.getElementById('detail-panel').classList.remove('open');
+  document.getElementById('overlay').classList.remove('open');
+}
+
+function renderTaskGrid() {
+  const active = BRIEFS.filter(b=>b.status==='in_execution'||b.status==='issued'||b.status==='acknowledged').slice(0,4);
+  const progressMap = {'issued':15,'acknowledged':30,'in_execution':65};
+  document.getElementById('task-grid').innerHTML = active.map(b=>`
+    <div class="task-card" onclick="openDetail('${b.id}')">
+      <div class="task-card-header">
+        <div class="task-card-num">${b.brief_number}</div>
+        ${badgeHTML(b.status)}
+      </div>
+      <div class="task-card-title">${b.recommended_workflow.substring(0,70)}…</div>
+      <div class="task-card-meta">${b.lob_scope.replace('_',' ')} · ${b.steps.length} steps · ${b.change_scope} change</div>
+      <div class="task-progress">
+        <div class="progress-label"><span>Progress</span><span>${progressMap[b.status]||0}%</span></div>
+        <div class="progress-bar"><div class="progress-fill" style="width:${progressMap[b.status]||0}%"></div></div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function filterTable(val) { activeFilter.text=val; renderTable(); }
+function filterStatus(val) { activeFilter.status=val; renderTable(); }
+function filterScope(val) { activeFilter.scope=val; renderTable(); }
+
+function filterLOB(lob, el) {
+  document.querySelectorAll('[id^="lob-"]').forEach(e=>e.classList.remove('active'));
+  el.classList.add('active');
+  activeFilter.lob=lob;
+  renderTable();
+}
+
+function switchSidebar(el, viewId) {
+  document.querySelectorAll('.sidebar-item').forEach(e=>e.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById(viewId).classList.add('active');
+}
+
+function copySQL() {
+  const sql = `-- MV-OS Solution Brief SST Schema v1.0
+-- PostgreSQL · COS v1.0
+
+CREATE EXTENSION IF NOT EXISTS "pgcrypto";
+
+CREATE TABLE solution_briefs (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  brief_number VARCHAR(20) UNIQUE NOT NULL,
+  requirement_brief_id UUID REFERENCES requirement_briefs(id),
+  parent_brief_id UUID REFERENCES solution_briefs(id),
+  version VARCHAR(10) NOT NULL DEFAULT '1.0',
+  lob_scope VARCHAR(20) CHECK (lob_scope IN ('consulting','software','automation','cross_lob')),
+  change_scope VARCHAR(10) NOT NULL CHECK (change_scope IN ('major','minor')),
+  status VARCHAR(20) CHECK (status IN ('draft','issued','acknowledged','in_execution','closed','pending_approval')),
+  problem_statement TEXT NOT NULL,
+  recommended_workflow TEXT NOT NULL,
+  rationale TEXT NOT NULL,
+  expected_outcome TEXT,
+  has_open_items BOOLEAN DEFAULT FALSE,
+  owner_approval_required BOOLEAN DEFAULT FALSE,
+  owner_approved_at TIMESTAMPTZ,
+  consultant_lead_id UUID NOT NULL REFERENCES users(id),
+  issued_at TIMESTAMPTZ,
+  acknowledged_at TIMESTAMPTZ,
+  closed_at TIMESTAMPTZ,
+  created_by UUID NOT NULL REFERENCES users(id),
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE brief_implementation_steps (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  brief_id UUID NOT NULL REFERENCES solution_briefs(id) ON DELETE CASCADE,
+  step_order INTEGER NOT NULL,
+  description TEXT NOT NULL,
+  assigned_lob VARCHAR(20) CHECK (assigned_lob IN ('consulting','software','automation')),
+  status VARCHAR(20) CHECK (status IN ('pending','in_progress','complete','blocked')) DEFAULT 'pending',
+  completed_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE brief_open_items (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  brief_id UUID NOT NULL REFERENCES solution_briefs(id) ON DELETE CASCADE,
+  description TEXT NOT NULL,
+  resolution_status VARCHAR(20) CHECK (resolution_status IN ('open','resolved','escalated')) DEFAULT 'open',
+  resolved_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Indexes
+CREATE INDEX idx_sb_status ON solution_briefs(status);
+CREATE INDEX idx_sb_lob ON solution_briefs(lob_scope);
+CREATE INDEX idx_sb_change_scope ON solution_briefs(change_scope);
+CREATE INDEX idx_steps_brief ON brief_implementation_steps(brief_id, step_order);
+
+-- Auto-update updated_at
+CREATE OR REPLACE FUNCTION update_updated_at()
+RETURNS TRIGGER AS $$ BEGIN NEW.updated_at = NOW(); RETURN NEW; END; $$ LANGUAGE plpgsql;
+CREATE TRIGGER trg_sb_updated BEFORE UPDATE ON solution_briefs FOR EACH ROW EXECUTE FUNCTION update_updated_at();`;
+  navigator.clipboard.writeText(sql).then(()=>{
+    const btn = document.querySelector('.btn-ghost');
+    const orig = btn.textContent;
+    btn.textContent = 'Copied!';
+    btn.style.color = 'var(--teal-600)';
+    setTimeout(()=>{ btn.textContent=orig; btn.style.color=''; }, 2000);
+  });
+}
+
+// Update LOB counts
+function updateCounts() {
+  const lobs = ['consulting','software','automation','cross_lob'];
+  lobs.forEach(lob=>{
+    document.getElementById('count-'+lob).textContent = BRIEFS.filter(b=>b.lob_scope===lob).length;
+  });
+  document.getElementById('count-all').textContent = BRIEFS.length;
+}
+
+renderTable();
+renderTaskGrid();
+updateCounts();
+</script>
+</body>
+</html>
