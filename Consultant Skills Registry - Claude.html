@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Consultant — Skills Registry · MV-OS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --teal-50: #E1F5EE; --teal-400: #1D9E75; --teal-600: #0F6E56; --teal-800: #085041;
+    --amber-50: #FAEEDA; --amber-400: #BA7517; --amber-600: #854F0B; --amber-800: #633806;
+    --red-50: #FCEBEB; --red-400: #E24B4A; --red-600: #A32D2D;
+    --purple-50: #EEEDFE; --purple-400: #534AB7; --purple-600: #3C3489;
+    --blue-50: #E6F1FB; --blue-600: #185FA5; --blue-800: #0C447C;
+    --gray-50: #F7F6F3; --gray-100: #EFEFEB; --gray-200: #D3D1C7;
+    --gray-400: #888780; --gray-600: #5F5E5A; --gray-800: #2C2C2A; --gray-900: #1A1A18;
+    --bg: #F4F3EF; --surface: #FAFAF8; --surface2: #FFFFFF;
+    --border: rgba(0,0,0,0.08); --border-strong: rgba(0,0,0,0.14);
+    --text-primary: #1A1A18; --text-secondary: #5F5E5A; --text-tertiary: #9C9A92;
+    --font-head: 'Sora', sans-serif;
+    --font-mono: 'DM Mono', monospace;
+    --radius-sm: 5px; --radius-md: 8px; --radius-lg: 12px; --radius-xl: 16px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: var(--font-head);
+    background: var(--bg);
+    color: var(--text-primary);
+    font-size: 14px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  .topbar {
+    background: var(--gray-900); color: #fff;
+    padding: 0 32px; height: 52px;
+    display: flex; align-items: center; justify-content: space-between;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .topbar-left { display: flex; align-items: center; gap: 14px; }
+  .topbar-logo { font-size: 12px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.9); font-family: var(--font-mono); }
+  .topbar-sep { width: 1px; height: 18px; background: rgba(255,255,255,0.15); }
+  .topbar-module { font-size: 12px; color: rgba(255,255,255,0.45); font-family: var(--font-mono); }
+  .topbar-right { display: flex; align-items: center; gap: 8px; }
+  .topbar-badge { font-size: 10px; font-family: var(--font-mono); font-weight: 500; padding: 3px 8px; border-radius: 3px; background: rgba(29,158,117,0.2); color: #5DCAA5; border: 0.5px solid rgba(29,158,117,0.35); }
+  .topbar-badge-purple { font-size: 10px; font-family: var(--font-mono); font-weight: 500; padding: 3px 8px; border-radius: 3px; background: rgba(83,74,183,0.2); color: #AFA9EC; border: 0.5px solid rgba(83,74,183,0.35); }
+
+  .page { max-width: 1060px; margin: 0 auto; padding: 36px 32px 64px; }
+
+  .page-header { margin-bottom: 28px; }
+  .page-header-meta { font-size: 11px; font-family: var(--font-mono); color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px; }
+  .page-header-title { font-size: 26px; font-weight: 600; color: var(--text-primary); margin-bottom: 6px; line-height: 1.25; }
+  .page-header-sub { font-size: 13px; color: var(--text-secondary); max-width: 620px; line-height: 1.6; }
+
+  .summary-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 24px; }
+  .summary-card { background: var(--surface2); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 14px 16px; }
+  .summary-num { font-size: 24px; font-weight: 600; color: var(--text-primary); line-height: 1; margin-bottom: 4px; }
+  .summary-label { font-size: 11px; color: var(--text-tertiary); }
+
+  /* foundational skill banner */
+  .foundational-banner {
+    display: flex; align-items: flex-start; gap: 14px;
+    background: var(--teal-50); border: 0.5px solid rgba(29,158,117,0.25);
+    border-radius: var(--radius-lg); padding: 14px 18px; margin-bottom: 20px;
+  }
+  .foundational-bar { width: 3px; min-height: 36px; border-radius: 2px; background: var(--teal-400); flex-shrink: 0; margin-top: 2px; }
+  .foundational-label { font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.09em; color: var(--teal-600); font-family: var(--font-mono); margin-bottom: 3px; }
+  .foundational-title { font-size: 13px; font-weight: 500; color: var(--teal-800); margin-bottom: 2px; }
+  .foundational-desc { font-size: 12px; color: var(--teal-600); line-height: 1.55; }
+  .foundational-agents { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+  .f-agent-tag { font-size: 10px; font-family: var(--font-mono); padding: 2px 7px; border-radius: 3px; background: rgba(29,158,117,0.15); color: var(--teal-600); border: 0.5px solid rgba(29,158,117,0.3); }
+
+  /* agent blocks */
+  .agent-block { margin-bottom: 14px; }
+  .agent-block-header {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 16px; background: var(--surface2);
+    border: 0.5px solid var(--border); border-radius: var(--radius-md);
+    margin-bottom: 8px; cursor: pointer; user-select: none;
+    transition: background 0.12s;
+  }
+  .agent-block-header:hover { background: var(--gray-50); }
+  .agent-bar { width: 3px; height: 22px; border-radius: 2px; flex-shrink: 0; }
+  .agent-block-name { font-size: 13px; font-weight: 500; color: var(--text-primary); flex: 1; }
+  .agent-block-id { font-size: 10px; font-family: var(--font-mono); color: var(--text-tertiary); }
+  .agent-block-count { font-size: 10px; font-family: var(--font-mono); color: var(--text-tertiary); background: var(--gray-100); border: 0.5px solid var(--border); border-radius: 99px; padding: 2px 8px; }
+  .agent-block-chev { font-size: 10px; color: var(--text-tertiary); transition: transform 0.2s; }
+  .agent-block-chev.open { transform: rotate(90deg); }
+
+  /* skills table */
+  .skills-table { display: none; border: 0.5px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; }
+  .skills-table.open { display: block; }
+
+  .skills-col-header { display: grid; grid-template-columns: 180px 1fr 150px 110px; background: var(--gray-900); }
+  .sch { padding: 7px 12px; font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.08em; color: rgba(255,255,255,0.45); font-family: var(--font-mono); }
+
+  .skill-row { display: grid; grid-template-columns: 180px 1fr 150px 110px; border-bottom: 0.5px solid var(--border); cursor: pointer; transition: background 0.1s; }
+  .skill-row:last-of-type { border-bottom: none; }
+  .skill-row:hover { background: var(--gray-50); }
+  .skill-row.expanded { background: var(--gray-50); }
+
+  .sc { padding: 10px 12px; font-size: 12px; border-right: 0.5px solid var(--border); }
+  .sc:last-child { border-right: none; }
+  .sc-name { font-weight: 500; color: var(--text-primary); line-height: 1.4; }
+  .sc-id { font-size: 10px; font-family: var(--font-mono); color: var(--text-tertiary); margin-top: 2px; }
+  .sc-desc { color: var(--text-secondary); line-height: 1.5; font-size: 11px; }
+  .sc-io-label { font-size: 10px; font-family: var(--font-mono); color: var(--text-tertiary); margin-bottom: 2px; text-transform: uppercase; letter-spacing: 0.06em; }
+  .sc-io-val { font-size: 11px; color: var(--text-secondary); line-height: 1.45; margin-bottom: 5px; }
+
+  /* skill detail expansion */
+  .skill-detail-row { display: none; border-bottom: 0.5px solid var(--border); background: var(--surface2); }
+  .skill-detail-row.open { display: grid; grid-template-columns: 1fr 1fr 1fr; }
+  .sdr-col { padding: 12px 14px; font-size: 12px; border-right: 0.5px solid var(--border); }
+  .sdr-col:last-child { border-right: none; }
+  .sdr-label { font-size: 9px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.09em; color: var(--text-tertiary); font-family: var(--font-mono); margin-bottom: 8px; padding-bottom: 5px; border-bottom: 0.5px solid var(--border); }
+  .sdr-prompt { font-size: 11px; color: var(--text-secondary); line-height: 1.65; font-style: italic; }
+  .sdr-item { display: flex; gap: 7px; margin-bottom: 6px; }
+  .sdr-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--gray-400); flex-shrink: 0; margin-top: 5px; }
+  .sdr-text { font-size: 11px; color: var(--text-secondary); line-height: 1.5; }
+  .sdr-quality { font-size: 11px; color: var(--text-secondary); line-height: 1.65; }
+
+  /* tags */
+  .tag { font-size: 10px; padding: 2px 7px; border-radius: 3px; font-weight: 500; white-space: nowrap; font-family: var(--font-mono); }
+  .tag-read  { background: var(--blue-50); color: var(--blue-600); }
+  .tag-write { background: var(--teal-50); color: var(--teal-600); }
+  .tag-gen   { background: var(--purple-50); color: var(--purple-600); }
+  .tag-check { background: var(--amber-50); color: var(--amber-800); }
+  .tag-route { background: var(--red-50); color: var(--red-600); }
+
+  /* legend */
+  .legend-bar { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; padding: 12px 16px; background: var(--surface2); border: 0.5px solid var(--border); border-radius: var(--radius-md); margin-bottom: 20px; font-size: 11px; color: var(--text-secondary); }
+  .legend-label { font-size: 10px; font-family: var(--font-mono); color: var(--text-tertiary); margin-right: 4px; }
+
+  .footer-note { margin-top: 24px; padding: 14px 18px; background: var(--surface2); border: 0.5px solid var(--border); border-radius: var(--radius-lg); font-size: 12px; color: var(--text-tertiary); line-height: 1.7; }
+  .footer-note strong { color: var(--text-secondary); font-weight: 500; }
+
+  /* ── MVOS NAV ── */
+  .mvos-nav {
+    background: var(--gray-800);
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    padding: 0 32px;
+    display: flex; align-items: center; gap: 4px;
+    height: 36px;
+  }
+  .mnav-crumb {
+    font-size: 11px; font-family: var(--font-mono);
+    color: rgba(255,255,255,0.3);
+    text-decoration: none; padding: 4px 10px;
+    border-radius: 4px; transition: all 0.12s;
+  }
+  .mnav-crumb:hover { color: rgba(255,255,255,0.6); background: rgba(255,255,255,0.05); }
+  .mnav-arrow { font-size: 10px; color: rgba(255,255,255,0.18); margin: 0 1px; }
+  .mnav-sep { width: 0.5px; height: 14px; background: rgba(255,255,255,0.1); margin: 0 6px; }
+  .mnav-link {
+    font-size: 11px; font-family: var(--font-mono);
+    color: rgba(255,255,255,0.3);
+    text-decoration: none; padding: 4px 10px;
+    border-radius: 4px; transition: all 0.12s;
+  }
+  .mnav-link:hover { color: rgba(255,255,255,0.6); background: rgba(255,255,255,0.05); }
+  .mnav-link.active {
+    color: #5DCAA5;
+    background: rgba(29,158,117,0.12);
+    border: 0.5px solid rgba(29,158,117,0.25);
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-left">
+    <div class="topbar-logo">MV-OS</div>
+    <div class="topbar-sep"></div>
+    <div class="topbar-module">consultant.skills-registry</div>
+  </div>
+  <div class="topbar-right">
+    <div class="topbar-badge">The Consultant</div>
+    <div class="topbar-badge-purple">COS v1.1</div>
+  </div>
+</div>
+
+<!-- MVOS NAV -->
+<nav class="mvos-nav">
+  <a class="mnav-crumb" href="index.html">MV-OS Wiki</a>
+  <span class="mnav-arrow">›</span>
+  <a class="mnav-crumb" href="index.html#the-consultant">The Consultant</a>
+  <div class="mnav-sep"></div>
+  <a class="mnav-link" href="Consultant Agent Brief.html">solution-brief.registry</a>
+  <a class="mnav-link" href="Consultant Agent Roster.html">agent-roster</a>
+  <a class="mnav-link" href="Consultant Scope of Work.html">scope-of-work</a>
+  <a class="mnav-link active" href="Consultant Skills Registry - Claude.html">skills-registry</a>
+</nav>
+
+<div class="page">
+
+  <div class="page-header">
+    <div class="page-header-meta">The Consultant · skills registry · v1.1</div>
+    <div class="page-header-title">All skills required per sub-agent</div>
+    <div class="page-header-sub">Each skill is a reusable capability with a defined input, output, prompt instruction, and quality gate. Click any skill row to expand the full spec. SK-WRITE-01 is foundational and inherited by all content-producing agents.</div>
+  </div>
+
+  <div class="summary-strip">
+    <div class="summary-card"><div class="summary-num" id="total-skills">24</div><div class="summary-label">Total skills</div></div>
+    <div class="summary-card"><div class="summary-num">1</div><div class="summary-label">Foundational skill</div></div>
+    <div class="summary-card"><div class="summary-num">7</div><div class="summary-label">Agents covered</div></div>
+    <div class="summary-card"><div class="summary-num">5</div><div class="summary-label">Skill types</div></div>
+  </div>
+
+  <!-- Foundational skill banner -->
+  <div class="foundational-banner">
+    <div class="foundational-bar"></div>
+    <div>
+      <div class="foundational-label">SK-WRITE-01 · Foundational · Shared</div>
+      <div class="foundational-title">Consultant writing skill — inherited by all content-producing sub-agents</div>
+      <div class="foundational-desc">Governs voice, structure, precision, evidence use, and audience targeting across all document types. Active voice with named actors. Evidence before assertion. Audience-calibrated depth. All gaps flagged as [OPEN ITEM]. Consistent MV-OS vocabulary enforced.</div>
+      <div class="foundational-agents">
+        <span class="f-agent-tag">CON-ORCH</span>
+        <span class="f-agent-tag">CON-IA</span>
+        <span class="f-agent-tag">CON-WD</span>
+        <span class="f-agent-tag">CON-KS</span>
+        <span class="f-agent-tag">CON-BP</span>
+        <span class="f-agent-tag">CON-AA</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Legend -->
+  <div class="legend-bar">
+    <span class="legend-label">Skill types:</span>
+    <span><span class="tag tag-read">Read</span> &nbsp;query / retrieve</span>
+    <span><span class="tag tag-write">Write</span> &nbsp;create / update records</span>
+    <span><span class="tag tag-gen">Generate</span> &nbsp;produce new content</span>
+    <span><span class="tag tag-check">Validate</span> &nbsp;check quality / compliance</span>
+    <span><span class="tag tag-route">Route</span> &nbsp;dispatch / notify</span>
+  </div>
+
+  <div id="skill-blocks"></div>
+
+  <div class="footer-note">
+    <strong>How to read this registry —</strong> Each skill row shows: skill name + ID, description, input/output summary, and skill type. Click any row to expand the full prompt instruction, quality criteria (three hard checkable conditions), and quality gate (plain-language standard for Consultant Lead review). SK-WRITE-01 is prepended to every Generate-type skill call at runtime.
+  </div>
+
+</div>
+
+<script>
+const AGENTS = [
+  {
+    id: 'CON-ORCH', name: 'Consultant Orchestrator', color: '#1D9E75',
+    skills: [
+      {
+        id:'SK-ORCH-01', name:'Document intake router', type:'route',
+        desc:'Classifies incoming document by type and routes to the correct sub-agent with full context payload.',
+        input:'Raw incoming document + sender agency',
+        output:'Typed document record + routing instruction',
+        prompt:'Classify the incoming document. Extract: document_type, sender_agency, lob_scope, urgency. Route to the correct sub-agent. If type cannot be determined, generate a clarification request — do not guess.',
+        criteria:['Document type must be one of: RB, Audit Finding, Escalation, Acknowledgement','LOB scope must be classified before routing','Cross-LOB documents flagged for coordination protocol'],
+        quality:'Document type identified with ≥95% accuracy. Missing type triggers clarification, never silent misroute.',
+      },
+      {
+        id:'SK-ORCH-02', name:'Approval event detector', type:'read',
+        desc:'Monitors brief status fields. Detects when status transitions to approved. Triggers build pipeline dispatch.',
+        input:'Brief status update event',
+        output:'Dispatch instruction to SST Architect + UI Builder',
+        prompt:'Check the brief record. Confirm: (1) status = approved, (2) consultant_lead_approved_at is set, (3) change_scope = major only if owner_approved_at is also set. If all conditions met, dispatch build pipeline. Otherwise, do nothing.',
+        criteria:['Both consultant_lead_approved_at and (if major) owner_approved_at must be non-null','Dispatch only fires once per version — no duplicate builds','Partial approvals must not trigger dispatch'],
+        quality:'No false triggers. Approval must be human-confirmed. Draft approval never triggers build.',
+      },
+      {
+        id:'SK-ORCH-03', name:'Human review gate', type:'route',
+        desc:'Holds completed bundle at review checkpoint. Notifies Consultant Lead. Awaits pass/revise/reject decision.',
+        input:'Completed three-artifact bundle (SOP + SST + UI)',
+        output:'Delivery instruction or revision request back to sub-agents',
+        prompt:'A bundle is ready for review. Notify the Consultant Lead with: brief_number, version, SOP summary, SST table count, UI view list, and any open items. Present pass / revise / reject options. Log the decision with timestamp and reviewer ID.',
+        criteria:['All three artifacts must be present before gate opens','Reviewer identity must be recorded','Revision triggers a targeted re-dispatch, not a full rebuild'],
+        quality:'No bundle leaves the agency without recorded human sign-off. Review notification must include all three artifacts in readable preview format.',
+      },
+      {
+        id:'SK-ORCH-04', name:'Inter-agency message dispatcher', type:'route',
+        desc:'Sends and receives documents to/from MV Orchestrator and Auditor Orchestrator with acknowledgement tracking.',
+        input:'Approved bundle + recipient agency',
+        output:'Sent document record + acknowledgement tracking entry',
+        prompt:'Dispatch the document to the recipient agency orchestrator. Attach: message_id, sender_agency, document_type, document_version, timestamp. Await acknowledgement. If no ack within SLA, escalate to retry queue.',
+        criteria:['Message ID must be unique and logged','Delivery SLA: acknowledgement within 24h','Failed delivery routes to escalation queue, not silent failure'],
+        quality:'Every outbound document has a unique message ID. No document marked delivered until acknowledgement received.',
+      },
+    ]
+  },
+  {
+    id: 'CON-IA', name: 'Intake Analyst', color: '#1D9E75',
+    skills: [
+      {
+        id:'SK-IA-01', name:'RB field validator', type:'check',
+        desc:'Checks all required Requirement Brief fields are present, typed correctly, and sufficiently detailed.',
+        input:'Raw Requirement Brief from MV',
+        output:'Validated intake record or field-level clarification request',
+        prompt:'Validate this Requirement Brief against the RB schema. Required fields: situation, pain_point, business_impact, urgency, lob_scope, constraints, submitted_by, date. For each missing or ambiguous field, generate a specific question. Return either a validated intake record or a clarification request listing gaps.',
+        criteria:['All 8 fields must be present and non-empty','urgency must be one of: immediate / high / standard / low','lob_scope must be classifiable — cross-LOB must be explicitly flagged'],
+        quality:'All 8 required RB fields checked. Partial briefs never passed downstream. Specific field-level feedback returned to MV, not generic rejection.',
+      },
+      {
+        id:'SK-IA-02', name:'LOB scope classifier', type:'check',
+        desc:'Maps the problem description to one or more LOBs. Flags cross-LOB coordination requirement automatically.',
+        input:'Validated RB intake record',
+        output:'LOB classification tag + cross-LOB flag if applicable',
+        prompt:'Read the pain_point and situation fields. Classify the primary LOB scope: consulting (feasibility, lean, OpEx), software (dev, reusable services, smart manufacturing), automation (PLC, SCADA, electrical, mechanical). If the problem spans 2+ LOBs, set cross_lob = true and list all affected LOBs. Explain your classification in one sentence.',
+        criteria:['Classification must reference specific keywords from the brief','Cross-LOB flag must list all affected LOBs by name','Ambiguous classification routes to human clarification, not a guess'],
+        quality:'Single LOB classification for 90%+ of briefs. Cross-LOB flag triggers coordination protocol automatically — never silently assigned to one LOB.',
+      },
+    ]
+  },
+  {
+    id: 'CON-WD', name: 'Workflow Designer', color: '#1D9E75',
+    skills: [
+      {
+        id:'SK-WD-01', name:'SOP drafter', type:'gen',
+        desc:'Produces a structured SOP from the intake record. Covers normal flow, exception flow, and escalation triggers.',
+        input:'Validated intake record + relevant library SOPs',
+        output:'Draft SOP with steps, exception handling, escalation triggers',
+        prompt:'Draft a Standard Operating Procedure for this workflow. Structure: (1) Purpose, (2) Scope and LOB, (3) Normal flow — numbered steps each with: step description, role owner, inputs required, outputs produced, (4) Exception flow — what happens when step fails or input is missing, (5) Escalation triggers — conditions that require human or Owner intervention. Apply lean principles: flag any step that does not add direct value.',
+        criteria:['Minimum 3 and maximum 12 steps for a minor change SOP','Every step must have a named role owner','At least one exception path and one escalation trigger defined'],
+        quality:'Every step has a named owner (role, not person). Exception flows cover: missing input, blocked step, escalation condition. No NVA steps without justification.',
+      },
+      {
+        id:'SK-WD-02', name:'Change scope classifier', type:'check',
+        desc:'Determines whether a workflow change is Major (Owner approval required) or Minor. Produces classification rationale.',
+        input:'Draft SOP + change description',
+        output:'change_scope tag (major/minor) + written rationale',
+        prompt:'Classify this workflow change as major or minor. Major criteria: affects more than one LOB, introduces a new role or authority level, changes an escalation path, requires budget or resource allocation, reverses a previously Owner-approved decision. Minor criteria: refines an existing step, adds clarity without changing authority or scope. State which criteria apply. If borderline, classify as major.',
+        criteria:['At least one major criterion must be checked before assigning minor','Borderline cases default to major','Rationale must be one paragraph minimum'],
+        quality:'Classification must reference at least one specific criterion. Never default to minor without checking all major criteria.',
+      },
+      {
+        id:'SK-WD-03', name:'Workflow library searcher', type:'read',
+        desc:'Semantic search over the approved SOP library to find existing workflows before drafting from scratch.',
+        input:'Intake record keywords + LOB classification',
+        output:'Top 3 relevant SOPs with similarity score and delta notes',
+        prompt:'Search the workflow library for SOPs related to: {keywords} in LOB: {lob_scope}. Return: top 3 matches with (1) SOP ID and title, (2) similarity rationale, (3) key differences from current requirement. If similarity > 80%, recommend revising the existing SOP. If < 40%, recommend new SOP creation.',
+        criteria:['Library must be queried before any new SOP is drafted','>80% similarity triggers revision recommendation, not new creation','Returned matches must include version number and last-updated date'],
+        quality:'Must query library before drafting any new SOP. If a relevant SOP exists with >80% overlap, recommend revision over new creation.',
+      },
+    ]
+  },
+  {
+    id: 'CON-KS', name: 'Knowledge Synthesizer', color: '#534AB7',
+    skills: [
+      {
+        id:'SK-KS-01', name:'Audit finding integrator', type:'read',
+        desc:'Reads relevant Audit Findings for the current LOB. Identifies corrective clauses to add to the SOP draft.',
+        input:'Draft SOP + LOB scope',
+        output:'Annotated SOP draft with finding-referenced corrective clauses',
+        prompt:'Query audit findings for LOB: {lob_scope} in the last 24 months. For each finding with severity Major or Critical: identify which SOP step it relates to and draft a corrective clause. Format each clause as: [AF-ID] — corrective action. If no relevant findings, state explicitly: no findings affect this workflow area.',
+        criteria:['Only findings with severity Major or Critical generate mandatory clauses','Observation findings may be noted but not required','Every clause must reference a specific finding ID'],
+        quality:'Every corrective clause must cite its source finding ID. Findings older than 12 months flagged as historical. No clause added without traceable evidence.',
+      },
+      {
+        id:'SK-KS-02', name:'Recurrence pattern detector', type:'read',
+        desc:'Cross-references the current workflow area against historical findings to detect recurring deviations.',
+        input:'Current workflow area + findings history',
+        output:'Recurrence report — flagged patterns + escalation recommendation if threshold met',
+        prompt:'Scan the findings history for this workflow area. Group findings by deviation type. For any deviation type appearing 2 or more times in the last 18 months: (1) name the pattern, (2) list the finding IDs, (3) draft a root cause hypothesis, (4) recommend a preventive SOP clause or escalation to Owner if systemic.',
+        criteria:['Threshold: 2+ occurrences in 18 months = flag','Each flagged pattern must have a named hypothesis','Systemic patterns (3+) must be escalated, not just noted'],
+        quality:'Recurrence threshold: same deviation type in same LOB 2+ times in 18 months = escalate. Pattern must be named and described, not just counted.',
+      },
+      {
+        id:'SK-KS-03', name:'Rationale writer', type:'gen',
+        desc:'Produces the rationale block for every Solution Brief: why this approach, what alternatives, what evidence.',
+        input:'Final SOP draft + finding citations + designer notes',
+        output:'Rationale block (3–5 paragraphs, Auditor-readable)',
+        prompt:'Write the rationale block for this Solution Brief. Cover: (1) Problem restatement in Consultant terms, (2) Why the recommended workflow addresses the root cause, not just symptoms, (3) What alternative approaches were considered and why rejected, (4) What audit evidence or library precedent supports this approach, (5) What outcome this creates for Machine Vision if executed correctly. Write for an Auditor audience — specific, evidence-referenced, no generics.',
+        criteria:['Minimum 3 paragraphs','At least one piece of evidence cited (finding ID or library SOP reference)','Alternatives section cannot be empty'],
+        quality:'Must address: why this solution, what alternatives rejected, what evidence supports the approach. Generic rationale without evidence fails quality gate.',
+      },
+    ]
+  },
+  {
+    id: 'CON-SA', name: 'SST Architect', color: '#185FA5',
+    skills: [
+      {
+        id:'SK-SA-01', name:'Entity modeler', type:'gen',
+        desc:'Derives database entities and typed columns from SOP field definitions. Applies 3NF normalization.',
+        input:'Approved SOP with all field definitions',
+        output:'Entity list with columns, types, nullability, defaults',
+        prompt:'Read the SOP and identify all data entities and their fields. For each entity: (1) name the table in snake_case plural, (2) list all columns with PostgreSQL type, nullability, and default value, (3) identify the primary key (always UUID), (4) identify all status fields — these must be VARCHAR with CHECK constraints listing valid states, (5) apply 3NF: extract lookup values into reference tables.',
+        criteria:['Every SOP field must appear as a column','All status fields use VARCHAR + CHECK, never ENUM','Base columns required on every table: id UUID PK, created_at, updated_at, created_by FK'],
+        quality:'All SOP fields must map to a column. No untyped columns. 3NF: no repeating groups, no transitive dependencies.',
+      },
+      {
+        id:'SK-SA-02', name:'State machine designer', type:'gen',
+        desc:'Maps every status field to a valid state transition graph with trigger conditions and role permissions.',
+        input:'Entity model with status fields',
+        output:'State transition map per status field + constraint rules',
+        prompt:'For each status field in the schema: (1) list all valid states, (2) draw the allowed transitions as: from_state → to_state (trigger condition) (who can trigger), (3) identify terminal states (no outbound transitions), (4) identify the initial state. Flag any transition that would violate workflow logic. Output as a transition table.',
+        criteria:['Every state must have at least one inbound transition (except initial)','Every state must have at least one outbound transition (except terminal)','Trigger conditions must name a role or system event, not just "when ready"'],
+        quality:'Every status transition must be explicitly listed. No implicit transitions. Every transition must have a named trigger condition.',
+      },
+      {
+        id:'SK-SA-03', name:'SQL DDL generator', type:'gen',
+        desc:'Produces complete runnable PostgreSQL CREATE TABLE scripts with extensions, indexes, FK constraints, and triggers.',
+        input:'Validated entity model + relationship map',
+        output:'Runnable .sql DDL file',
+        prompt:'Generate a complete PostgreSQL DDL script. Include in order: (1) CREATE EXTENSION IF NOT EXISTS pgcrypto, (2) CREATE TABLE statements in FK dependency order, (3) CHECK constraints on all enumerated fields, (4) FK constraints with ON DELETE behavior stated, (5) CREATE INDEX for status, lob_scope, and date-range query fields, (6) updated_at trigger function and trigger binding for each table.',
+        criteria:['Tables must appear in FK dependency order','Every FK must specify ON DELETE behavior','updated_at trigger must be applied to every table'],
+        quality:'Script must run without errors on a clean PostgreSQL 14+ instance. Includes pgcrypto, all tables in dependency order, indexes, updated_at trigger.',
+      },
+    ]
+  },
+  {
+    id: 'CON-UI', name: 'UI Builder', color: '#3C3489',
+    skills: [
+      {
+        id:'SK-UI-01', name:'LOB Lead view builder', type:'gen',
+        desc:'Builds the full registry view for LOB Leads: stat strip, filter bar, sortable table, badges, click-to-detail.',
+        input:'SST schema + approved SOP field list + sample data',
+        output:'Complete HTML/CSS/JS LOB Lead view',
+        prompt:'Build the LOB Lead monitoring view for this workflow. Include: (1) stat strip showing counts per status value from the SST schema, (2) filter bar with search input and dropdowns for each enumerated field, (3) sortable table with all key fields, (4) status badges using MV-OS color system: teal=active/issued, amber=pending, red=escalated, gray=closed/draft, (5) click-to-detail row interaction. Bind all data fields to SST column names exactly.',
+        criteria:['Every status value in the SST CHECK constraint must have a badge style','All filter dropdown values must match SST CHECK constraint enumerations','Field names in JS data objects must match SST column names exactly'],
+        quality:'Stat strip must reflect live data. All status values must have badge styles. Filters must match enumerated field values exactly.',
+      },
+      {
+        id:'SK-UI-02', name:'MV team execution view builder', type:'gen',
+        desc:'Builds the compact execution panel for MV team members: task cards, current step, progress, blockers.',
+        input:'SST schema + implementation steps table + sample data',
+        output:'Complete HTML/CSS/JS MV team execution view',
+        prompt:'Build the MV team execution view. Include: (1) summary stats: assigned count, overdue count, completed this month, (2) task cards in a 2-column grid — each showing: brief_number, status badge, recommended_workflow truncated, LOB tag, step count, progress bar derived from completed steps / total steps, (3) blocked items use amber accent, (4) click opens full detail panel.',
+        criteria:['Only in_execution, acknowledged, issued items shown','Progress bar must be computed from step statuses, not hardcoded','Blocked step status must have distinct visual treatment'],
+        quality:'View must only show items relevant to execution. Each card shows step count and current step. Blocked items visually distinct.',
+      },
+      {
+        id:'SK-UI-03', name:'Design system enforcer', type:'check',
+        desc:'Validates a generated UI against the MV-OS design token set. Checks typography, colors, and SST field binding.',
+        input:'Generated HTML/CSS UI artifact',
+        output:'Validation report — pass or violation list with fixes',
+        prompt:'Audit this UI artifact against the MV-OS design system. Check: (1) no hardcoded hex colors — all colors use CSS variables or MV-OS palette tokens, (2) typography: Sora for body/headings, DM Mono for monospaced elements, (3) status color mapping: issued=teal, pending/major=amber, escalated=red, draft/closed=gray, (4) all data field names in JS match SST column names exactly, (5) border-radius uses --radius-md or --radius-lg. Return: pass or violation list with line references and fixes.',
+        criteria:['Zero hardcoded colors is a hard requirement — not advisory','Field name mismatches fail the gate — not a warning','Typography violations must be fixed before bundle is assembled'],
+        quality:'Zero hardcoded colors outside CSS variables. Font usage: Sora for headings/labels, DM Mono for IDs/codes/badges.',
+      },
+    ]
+  },
+  {
+    id: 'CON-BP', name: 'Brief Publisher', color: '#1D9E75',
+    skills: [
+      {
+        id:'SK-BP-01', name:'COS document assembler', type:'gen',
+        desc:'Assembles the final SOP document applying the Consultant Output Standard format with all required fields.',
+        input:'SOP draft + rationale block + change scope + metadata',
+        output:'COS-compliant Solution Brief document v1.0',
+        prompt:'Assemble the final Solution Brief document. Apply COS v1.0 standard. Required header fields: Document Type = Solution Brief, Originating Agency = The Consultant, Receiving Agency = Machine Vision, Date = today, Version = {version}. Required body fields: brief_number, problem_statement, recommended_workflow, rationale, implementation_steps (numbered), expected_outcome, open_items (if any). If any required field is missing, halt and return a gap report — do not assemble an incomplete document.',
+        criteria:['All 12 required fields must be present and non-empty','Version must follow semver-style: 1.0, 1.1, 1.2','Halt on any missing field — never produce a partial document'],
+        quality:'All required COS fields present. No field left blank. Halt on any missing field — never produce a partial document.',
+      },
+      {
+        id:'SK-BP-02', name:'Bundle packager', type:'write',
+        desc:'Packages the three artifacts (SOP, SST schema, monitoring UI) into a versioned delivery bundle for human review.',
+        input:'COS document + DDL script + UI artifact',
+        output:'Versioned bundle manifest + three artifact files',
+        prompt:'Package the three artifacts into a Solution Brief bundle. Create a bundle manifest with: bundle_id, brief_number, version, date, (1) SOP document — title, version, field count, (2) SST schema — table count, column count, DDL line count, (3) Monitoring UI — view count, field bindings verified. If any artifact is missing, return: bundle_incomplete with list of what is missing.',
+        criteria:['All three artifacts must be present — no partial bundles','Bundle manifest must include artifact version numbers','Field binding verification must be completed before packaging'],
+        quality:'Bundle is incomplete if any of the three artifacts is missing. Incomplete bundle must not reach review gate.',
+      },
+    ]
+  },
+];
+
+const TYPE_TAGS   = { read:'tag-read', write:'tag-write', gen:'tag-gen', check:'tag-check', route:'tag-route' };
+const TYPE_LABELS = { read:'Read', write:'Write', gen:'Generate', check:'Validate', route:'Route' };
+
+let totalSkills = 0;
+let expandedSkill = null;
+const container = document.getElementById('skill-blocks');
+
+AGENTS.forEach((agent, ai) => {
+  totalSkills += agent.skills.length;
+
+  const block = document.createElement('div');
+  block.className = 'agent-block';
+
+  const skillsHTML = agent.skills.map((skill, si) => {
+    const key = `${ai}-${si}`;
+    return `
+      <div class="skill-row" id="srow-${key}" onclick="toggleSkill('${key}')">
+        <div class="sc">
+          <div class="sc-name">${skill.name}</div>
+          <div class="sc-id">${skill.id}</div>
+        </div>
+        <div class="sc sc-desc">${skill.desc}</div>
+        <div class="sc">
+          <div class="sc-io-label">Input</div>
+          <div class="sc-io-val">${skill.input}</div>
+          <div class="sc-io-label">Output</div>
+          <div class="sc-io-val">${skill.output}</div>
+        </div>
+        <div class="sc" style="display:flex;align-items:flex-start;padding-top:11px;gap:6px;flex-wrap:wrap">
+          <span class="tag ${TYPE_TAGS[skill.type]}">${TYPE_LABELS[skill.type]}</span>
+          <span style="font-size:10px;font-family:var(--font-mono);color:var(--text-tertiary)">v1.0</span>
+        </div>
+      </div>
+      <div class="skill-detail-row" id="sdetail-${key}">
+        <div class="sdr-col">
+          <div class="sdr-label">Prompt instruction</div>
+          <div class="sdr-prompt">"${skill.prompt}"</div>
+        </div>
+        <div class="sdr-col">
+          <div class="sdr-label">Quality criteria</div>
+          ${skill.criteria.map(c => `<div class="sdr-item"><div class="sdr-dot"></div><div class="sdr-text">${c}</div></div>`).join('')}
+        </div>
+        <div class="sdr-col">
+          <div class="sdr-label">Quality gate</div>
+          <div class="sdr-quality">${skill.quality}</div>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  block.innerHTML = `
+    <div class="agent-block-header" onclick="toggleBlock(${ai})">
+      <div class="agent-bar" style="background:${agent.color}"></div>
+      <div class="agent-block-name">${agent.name}</div>
+      <div class="agent-block-id">${agent.id}</div>
+      <div class="agent-block-count">${agent.skills.length} skills</div>
+      <div class="agent-block-chev" id="bchev-${ai}">▶</div>
+    </div>
+    <div class="skills-table" id="btable-${ai}">
+      <div class="skills-col-header">
+        <div class="sch">Skill name</div>
+        <div class="sch">Description</div>
+        <div class="sch">Input / Output</div>
+        <div class="sch">Type · Version</div>
+      </div>
+      ${skillsHTML}
+    </div>
+  `;
+  container.appendChild(block);
+});
+
+document.getElementById('total-skills').textContent = totalSkills + 1;
+
+function toggleBlock(ai) {
+  const table = document.getElementById('btable-'+ai);
+  const chev  = document.getElementById('bchev-'+ai);
+  const isOpen = table.classList.contains('open');
+  table.classList.toggle('open', !isOpen);
+  chev.classList.toggle('open', !isOpen);
+}
+
+function toggleSkill(key) {
+  const detail = document.getElementById('sdetail-'+key);
+  const row    = document.getElementById('srow-'+key);
+  if (expandedSkill && expandedSkill !== key) {
+    document.getElementById('sdetail-'+expandedSkill).classList.remove('open');
+    document.getElementById('srow-'+expandedSkill).classList.remove('expanded');
+  }
+  const isOpen = detail.classList.contains('open');
+  detail.classList.toggle('open', !isOpen);
+  row.classList.toggle('expanded', !isOpen);
+  expandedSkill = isOpen ? null : key;
+}
+
+toggleBlock(0);
+</script>
+</body>
+</html>

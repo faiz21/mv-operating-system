@@ -1,0 +1,281 @@
+{
+  "phases": [
+    {
+      "id": "comm",
+      "label": "Communication protocol",
+      "color": "teal",
+      "tasks": [
+        {
+          "id": "c1",
+          "title": "Requirement Brief template",
+          "sub": "MV → Consultant. Fields: situation, pain point, business impact, urgency, constraints, LOB.",
+          "agency": "mv",
+          "prompt": "Design the Requirement Brief template for MV-OS"
+        },
+        {
+          "id": "c2",
+          "title": "Solution Brief template",
+          "sub": "Consultant → MV. Fields: problem statement, recommended workflow, rationale, implementation steps, expected outcome.",
+          "agency": "con",
+          "prompt": "Design the Solution Brief template for MV-OS"
+        },
+        {
+          "id": "c3",
+          "title": "Audit Finding template",
+          "sub": "Auditor → Consultant. Fields: finding ID, severity, deviation, reference workflow, root cause, recurrence flag.",
+          "agency": "aud",
+          "prompt": "Design the Audit Finding template for MV-OS"
+        },
+        {
+          "id": "c4",
+          "title": "Escalation Request template",
+          "sub": "Any agency → Owner. Fields: trigger reason, options considered, recommendation, decision required.",
+          "agency": "all",
+          "prompt": "Design the Escalation Request template for MV-OS"
+        },
+        {
+          "id": "c5",
+          "title": "Execution Log format",
+          "sub": "MV → Auditor. Checkpoint-based logging structure for project execution trail.",
+          "agency": "mv",
+          "prompt": "Design the Execution Log format for MV-OS"
+        },
+        {
+          "id": "c6",
+          "title": "Cross-LOB coordination protocol",
+          "sub": "How projects spanning Consulting + Software + Automation SI get owned and coordinated.",
+          "agency": "all",
+          "prompt": "Design the cross-LOB coordination protocol for MV-OS"
+        }
+      ]
+    },
+    {
+      "id": "skills",
+      "label": "Skills standard",
+      "color": "teal",
+      "tasks": [
+        {
+          "id": "s1",
+          "title": "Audit severity classification system",
+          "sub": "Criteria for Critical / Major / Minor / Observation — what qualifies each level per LOB.",
+          "agency": "aud",
+          "prompt": "Design the audit severity classification system for MV-OS"
+        },
+        {
+          "id": "s2",
+          "title": "Workflow change approval thresholds",
+          "sub": "What makes a workflow change Major vs Minor? Who approves each type?",
+          "agency": "con",
+          "prompt": "Define workflow change approval thresholds for MV-OS"
+        },
+        {
+          "id": "s3",
+          "title": "Consulting LOB skill standards",
+          "sub": "Deliverable quality standards, feasibility study format, lean workshop SOP.",
+          "agency": "mv",
+          "prompt": "Define skill and deliverable standards for Machine Vision Consulting LOB"
+        },
+        {
+          "id": "s4",
+          "title": "Software Dev LOB skill standards",
+          "sub": "Code review criteria, reusable service guidelines, smart manufacturing solution architecture standards.",
+          "agency": "mv",
+          "prompt": "Define skill and deliverable standards for Machine Vision Software Development LOB"
+        },
+        {
+          "id": "s5",
+          "title": "Automation SI LOB skill standards",
+          "sub": "PLC/SCADA naming conventions, electrical design checklist, commissioning SOP.",
+          "agency": "mv",
+          "prompt": "Define skill and deliverable standards for Machine Vision Automation SI LOB"
+        }
+      ]
+    },
+    {
+      "id": "memory",
+      "label": "Memory & context",
+      "color": "purple",
+      "tasks": [
+        {
+          "id": "m1",
+          "title": "Fill in human team roster",
+          "sub": "Add names and roles to the Team Structure table in the project instructions.",
+          "agency": "all",
+          "prompt": "Help me fill in the MV-OS human team roster"
+        },
+        {
+          "id": "m2",
+          "title": "Owner reporting cadence",
+          "sub": "How often does the Owner receive an Audit Report? What format and scope?",
+          "agency": "aud",
+          "prompt": "Design the Owner reporting cadence and format for MV-OS"
+        },
+        {
+          "id": "m3",
+          "title": "Workflow library structure",
+          "sub": "Where approved SOPs live, how they are versioned, and how agents reference them.",
+          "agency": "con",
+          "prompt": "Design the workflow library structure for MV-OS"
+        },
+        {
+          "id": "m4",
+          "title": "Project memory conventions",
+          "sub": "Standard format for [OPEN ITEM] tracking, version labeling, and session handoff notes.",
+          "agency": "all",
+          "prompt": "Define project memory and session handoff conventions for MV-OS"
+        }
+      ]
+    },
+    {
+      "id": "orgs",
+      "label": "Organization charts",
+      "color": "purple",
+      "tasks": [
+        {
+          "id": "o1",
+          "title": "Machine Vision org chart",
+          "sub": "Internal structure: Owner, LOB leads, team members by domain. Shows reporting lines.",
+          "agency": "mv",
+          "prompt": "Build the Machine Vision internal org chart for MV-OS"
+        },
+        {
+          "id": "o2",
+          "title": "Consultant agency structure",
+          "sub": "Who designs, who reviews, how workflow decisions are made internally.",
+          "agency": "con",
+          "prompt": "Design The Consultant agency internal structure for MV-OS"
+        },
+        {
+          "id": "o3",
+          "title": "Auditor agency structure",
+          "sub": "Who audits which LOB, how findings are reviewed before issuance, escalation path.",
+          "agency": "aud",
+          "prompt": "Design The Auditor agency internal structure for MV-OS"
+        },
+        {
+          "id": "o4",
+          "title": "Cross-agency authority map",
+          "sub": "Single diagram showing all three agencies + Owner with authority lines and document flows.",
+          "agency": "all",
+          "prompt": "Build the cross-agency authority map for MV-OS"
+        }
+      ]
+    },
+    {
+      "id": "agents",
+      "label": "Agent architecture",
+      "color": "amber",
+      "tasks": [
+        {
+          "id": "a1",
+          "title": "Machine Vision orchestrator design",
+          "sub": "AI agent sub-architecture for execution, project tracking, client comms across 3 LOBs.",
+          "agency": "mv",
+          "prompt": "Design the Machine Vision AI orchestrator sub-architecture for MV-OS"
+        },
+        {
+          "id": "a2",
+          "title": "Consultant orchestrator design",
+          "sub": "AI agent for workflow design, process analysis, SOP authoring, knowledge synthesis.",
+          "agency": "con",
+          "prompt": "Design The Consultant AI orchestrator sub-architecture for MV-OS"
+        },
+        {
+          "id": "a3",
+          "title": "Auditor orchestrator design",
+          "sub": "AI agent for compliance checking, deviation detection, finding issuance, report generation.",
+          "agency": "aud",
+          "prompt": "Design The Auditor AI orchestrator sub-architecture for MV-OS"
+        },
+        {
+          "id": "a4",
+          "title": "Inter-agent communication spec",
+          "sub": "How the three orchestrators pass documents to each other. Format, triggers, acknowledgement.",
+          "agency": "all",
+          "prompt": "Design the inter-agent communication specification for MV-OS orchestrators"
+        },
+        {
+          "id": "a5",
+          "title": "Human-in-the-loop integration points",
+          "sub": "Where and how human team members review, approve, or override AI agent outputs.",
+          "agency": "all",
+          "prompt": "Design the human-in-the-loop integration points for MV-OS AI agents"
+        }
+      ]
+    },
+    {
+      "id": "ui",
+      "label": "UI interface",
+      "color": "gray",
+      "tasks": [
+        {
+          "id": "u1",
+          "title": "MV-OS owner dashboard",
+          "sub": "Owner-facing view: agency status, open findings, recent briefs, escalation queue.",
+          "agency": "all",
+          "prompt": "Design the MV-OS owner dashboard UI concept"
+        },
+        {
+          "id": "u2",
+          "title": "Requirement Brief submission UI",
+          "sub": "Form for MV team to raise a new requirement and send it to The Consultant.",
+          "agency": "mv",
+          "prompt": "Design the Requirement Brief submission UI for MV-OS"
+        },
+        {
+          "id": "u3",
+          "title": "Audit finding review UI",
+          "sub": "Auditor-facing interface for logging deviations, setting severity, routing to Consultant.",
+          "agency": "aud",
+          "prompt": "Design the Audit Finding review UI for MV-OS"
+        },
+        {
+          "id": "u4",
+          "title": "Workflow library browser",
+          "sub": "Interface for browsing, versioning, and referencing approved SOPs and workflows.",
+          "agency": "con",
+          "prompt": "Design the workflow library browser UI for MV-OS"
+        },
+        {
+          "id": "u5",
+          "title": "Mobile status view",
+          "sub": "Lightweight view for team members on-site to check current project status and open items.",
+          "agency": "mv",
+          "prompt": "Design the mobile status view UI for MV-OS field team members"
+        }
+      ]
+    }
+  ],
+  "statuses": {
+    "c1": "todo",
+    "c2": "todo",
+    "c3": "todo",
+    "c4": "todo",
+    "c5": "todo",
+    "c6": "todo",
+    "s1": "todo",
+    "s2": "todo",
+    "s3": "todo",
+    "s4": "todo",
+    "s5": "todo",
+    "m1": "todo",
+    "m2": "todo",
+    "m3": "todo",
+    "m4": "todo",
+    "o1": "todo",
+    "o2": "todo",
+    "o3": "todo",
+    "o4": "todo",
+    "a1": "todo",
+    "a2": "todo",
+    "a3": "todo",
+    "a4": "todo",
+    "a5": "todo",
+    "u1": "todo",
+    "u2": "done",
+    "u3": "todo",
+    "u4": "todo",
+    "u5": "todo"
+  },
+  "exportedAt": "2026-03-19T18:14:20.895Z"
+}
