@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MV-OS Wiki</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --teal-50: #E1F5EE; --teal-100: #C3EBD9; --teal-400: #1D9E75; --teal-600: #0F6E56; --teal-800: #085041;
+    --amber-50: #FAEEDA; --amber-400: #BA7517; --amber-600: #854F0B; --amber-800: #633806;
+    --purple-50: #EEEDFE; --purple-400: #534AB7; --purple-600: #3C3489;
+    --red-50: #FCEBEB; --red-400: #E24B4A; --red-600: #A32D2D;
+    --blue-50: #E6F1FB; --blue-600: #185FA5;
+    --gray-50: #F7F6F3; --gray-100: #EFEFEB; --gray-200: #D3D1C7;
+    --gray-400: #888780; --gray-600: #5F5E5A; --gray-800: #2C2C2A; --gray-900: #1A1A18;
+    --bg: #F4F3EF; --surface: #FAFAF8; --surface2: #FFFFFF;
+    --border: rgba(0,0,0,0.08); --border-strong: rgba(0,0,0,0.14);
+    --text-primary: #1A1A18; --text-secondary: #5F5E5A; --text-tertiary: #9C9A92;
+    --font-head: 'Sora', sans-serif;
+    --font-mono: 'DM Mono', monospace;
+    --radius-sm: 5px; --radius-md: 8px; --radius-lg: 12px; --radius-xl: 16px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: var(--font-head);
+    background: var(--bg);
+    color: var(--text-primary);
+    font-size: 14px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* ── TOPBAR ── */
+  .topbar {
+    background: var(--gray-900); color: #fff;
+    padding: 0 36px; height: 52px;
+    display: flex; align-items: center; justify-content: space-between;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .topbar-left { display: flex; align-items: center; gap: 14px; }
+  .topbar-logo { font-size: 13px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: #fff; font-family: var(--font-mono); }
+  .topbar-sep { width: 1px; height: 18px; background: rgba(255,255,255,0.15); }
+  .topbar-subtitle { font-size: 12px; color: rgba(255,255,255,0.4); font-family: var(--font-mono); }
+  .topbar-right { display: flex; align-items: center; gap: 8px; }
+  .tbadge {
+    font-size: 10px; font-family: var(--font-mono); font-weight: 500;
+    padding: 3px 8px; border-radius: 3px;
+  }
+  .tbadge-teal { background: rgba(29,158,117,0.2); color: #5DCAA5; border: 0.5px solid rgba(29,158,117,0.35); }
+  .tbadge-gray { background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.4); border: 0.5px solid rgba(255,255,255,0.12); }
+
+  /* ── WIKI NAV ── */
+  .wiki-nav {
+    background: var(--gray-800);
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    padding: 0 36px;
+    display: flex; align-items: center; gap: 4px;
+    height: 36px;
+  }
+  .wnav-link {
+    font-size: 11px; font-family: var(--font-mono);
+    color: rgba(255,255,255,0.35);
+    text-decoration: none; padding: 4px 10px;
+    border-radius: 4px; transition: all 0.12s;
+  }
+  .wnav-link:hover { color: rgba(255,255,255,0.65); background: rgba(255,255,255,0.05); }
+  .wnav-link.active { color: #fff; background: rgba(255,255,255,0.07); }
+  .wnav-sep { width: 0.5px; height: 14px; background: rgba(255,255,255,0.1); margin: 0 4px; }
+
+  /* ── LAYOUT ── */
+  .page-wrap {
+    max-width: 1060px; margin: 0 auto;
+    padding: 48px 36px 80px;
+  }
+
+  /* ── PAGE HEADER ── */
+  .page-header { margin-bottom: 48px; }
+  .page-eyebrow {
+    font-size: 10px; font-family: var(--font-mono);
+    text-transform: uppercase; letter-spacing: 0.14em;
+    color: var(--text-tertiary); margin-bottom: 10px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .page-eyebrow::before { content: ''; display: inline-block; width: 16px; height: 1.5px; background: var(--text-tertiary); border-radius: 1px; }
+  .page-title { font-size: 32px; font-weight: 600; color: var(--text-primary); letter-spacing: -0.02em; margin-bottom: 8px; line-height: 1.2; }
+  .page-title em { color: var(--teal-400); font-style: normal; }
+  .page-desc { font-size: 13px; color: var(--text-secondary); max-width: 540px; line-height: 1.7; }
+
+  /* ── AGENCY SECTIONS ── */
+  .agencies { display: flex; flex-direction: column; gap: 40px; }
+
+  .agency { }
+  .agency-header {
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 0.5px solid var(--border);
+  }
+  .agency-color-bar { width: 3px; height: 24px; border-radius: 2px; flex-shrink: 0; }
+  .agency-name { font-size: 15px; font-weight: 600; color: var(--text-primary); }
+  .agency-tag {
+    font-size: 10px; font-family: var(--font-mono); font-weight: 500;
+    padding: 2px 8px; border-radius: 3px;
+    margin-left: 4px;
+  }
+  .agency-desc { font-size: 12px; color: var(--text-secondary); line-height: 1.6; margin-left: auto; max-width: 380px; text-align: right; }
+
+  /* ── PAGE GRID ── */
+  .page-grid {
+    display: grid;
+    gap: 10px;
+  }
+  .page-grid-3 { grid-template-columns: repeat(3, 1fr); }
+  .page-grid-2 { grid-template-columns: repeat(2, 1fr); }
+  .page-grid-4 { grid-template-columns: repeat(4, 1fr); }
+
+  .wiki-page-card {
+    background: var(--surface2);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 18px 20px;
+    text-decoration: none; color: inherit;
+    display: flex; flex-direction: column; gap: 6px;
+    transition: all 0.15s ease;
+    position: relative; overflow: hidden;
+  }
+  .wiki-page-card::after {
+    content: '→';
+    position: absolute; right: 16px; top: 50%;
+    transform: translateY(-50%);
+    font-size: 13px; color: var(--text-tertiary);
+    opacity: 0; transition: all 0.15s;
+  }
+  .wiki-page-card:hover {
+    border-color: var(--border-strong);
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    transform: translateY(-1px);
+  }
+  .wiki-page-card:hover::after { opacity: 1; right: 14px; }
+  .wiki-page-card.placeholder {
+    border-style: dashed; background: var(--gray-50);
+    cursor: default; pointer-events: none;
+  }
+  .wiki-page-card.placeholder:hover { transform: none; box-shadow: none; }
+
+  .wpc-tag {
+    font-size: 9px; font-family: var(--font-mono); font-weight: 500;
+    padding: 2px 6px; border-radius: 3px; letter-spacing: 0.05em;
+    text-transform: uppercase; align-self: flex-start;
+  }
+  .wpc-title { font-size: 13px; font-weight: 500; color: var(--text-primary); line-height: 1.35; }
+  .wpc-desc { font-size: 11px; color: var(--text-tertiary); line-height: 1.55; }
+  .wpc-coming { font-size: 10px; font-family: var(--font-mono); color: var(--text-tertiary); margin-top: 4px; }
+
+  /* ── PLACEHOLDER AGENCY CARD ── */
+  .agency-placeholder {
+    background: var(--gray-50);
+    border: 0.5px dashed var(--border-strong);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    text-align: center; color: var(--text-tertiary);
+    font-size: 12px; font-family: var(--font-mono);
+  }
+
+  /* ── SUMMARY ROW ── */
+  .summary-row {
+    display: flex; gap: 10px; margin-bottom: 48px; flex-wrap: wrap;
+  }
+  .summary-chip {
+    background: var(--gray-900); color: rgba(255,255,255,0.7);
+    border-radius: var(--radius-md); padding: 10px 18px;
+    display: flex; flex-direction: column; align-items: center; gap: 2px;
+    min-width: 90px;
+  }
+  .sc-num { font-size: 20px; font-weight: 600; line-height: 1; }
+  .sc-num.teal { color: #5DCAA5; }
+  .sc-num.amber { color: #DCA753; }
+  .sc-num.purple { color: #AFA9EC; }
+  .sc-label { font-size: 9px; font-family: var(--font-mono); color: rgba(255,255,255,0.35); text-transform: uppercase; letter-spacing: 0.08em; }
+
+  /* colors */
+  .teal-bar { background: var(--teal-400); }
+  .purple-bar { background: var(--purple-400); }
+  .amber-bar { background: var(--amber-400); }
+
+  .tag-teal { background: var(--teal-50); color: var(--teal-600); }
+  .tag-purple { background: var(--purple-50); color: var(--purple-600); }
+  .tag-amber { background: var(--amber-50); color: var(--amber-600); }
+  .tag-gray { background: var(--gray-100); color: var(--gray-600); }
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="topbar-left">
+    <div class="topbar-logo">MV-OS</div>
+    <div class="topbar-sep"></div>
+    <div class="topbar-subtitle">internal wiki</div>
+  </div>
+  <div class="topbar-right">
+    <div class="tbadge tbadge-gray">Machine Vision</div>
+    <div class="tbadge tbadge-teal">v1.1</div>
+  </div>
+</div>
+
+<!-- WIKI NAV -->
+<nav class="wiki-nav">
+  <a class="wnav-link active" href="index.html">Home</a>
+  <div class="wnav-sep"></div>
+  <a class="wnav-link" href="#machine-vision">Machine Vision</a>
+  <a class="wnav-link" href="#the-consultant">The Consultant</a>
+  <a class="wnav-link" href="#the-auditor">The Auditor</a>
+  <div class="wnav-sep"></div>
+  <a class="wnav-link" href="org-chart.html">Org Chart</a>
+  <a class="wnav-link" href="skills-wiki.html">Skills Wiki</a>
+</nav>
+
+<div class="page-wrap">
+
+  <!-- PAGE HEADER -->
+  <div class="page-header">
+    <div class="page-eyebrow">Machine Vision · Internal Wiki</div>
+    <div class="page-title">Machine Vision <em>OS</em></div>
+    <div class="page-desc">The operating system for Machine Vision. Three agencies — Machine Vision, The Consultant, and The Auditor — each with defined scope, agents, and outputs.</div>
+  </div>
+
+  <!-- SUMMARY -->
+  <div class="summary-row">
+    <div class="summary-chip">
+      <div class="sc-num">3</div>
+      <div class="sc-label">Agencies</div>
+    </div>
+    <div class="summary-chip">
+      <div class="sc-num teal">8</div>
+      <div class="sc-label">Agents</div>
+    </div>
+    <div class="summary-chip">
+      <div class="sc-num amber">36</div>
+      <div class="sc-label">Scope items</div>
+    </div>
+    <div class="summary-chip">
+      <div class="sc-num purple">25</div>
+      <div class="sc-label">Skills</div>
+    </div>
+    <div class="summary-chip">
+      <div class="sc-num teal">8</div>
+      <div class="sc-label">Active briefs</div>
+    </div>
+  </div>
+
+  <!-- AGENCIES -->
+  <div class="agencies">
+
+    <!-- ── MACHINE VISION ── -->
+    <div class="agency" id="machine-vision">
+      <div class="agency-header">
+        <div class="agency-color-bar teal-bar"></div>
+        <div class="agency-name">Machine Vision</div>
+        <span class="agency-tag tag-teal">Main agency</span>
+        <div class="agency-desc">The operating client — receives solutions, executes briefs, runs LOBs across Consulting, Software, and Automation SI.</div>
+      </div>
+      <div class="agency-placeholder">
+        Wiki pages for Machine Vision coming soon
+      </div>
+    </div>
+
+    <!-- ── THE CONSULTANT ── -->
+    <div class="agency" id="the-consultant">
+      <div class="agency-header">
+        <div class="agency-color-bar purple-bar"></div>
+        <div class="agency-name">The Consultant</div>
+        <span class="agency-tag tag-purple">Advisory agency</span>
+        <div class="agency-desc">Designs workflows, synthesizes audit findings, architects data schemas, and builds monitoring UIs for Machine Vision.</div>
+      </div>
+      <div class="page-grid page-grid-2">
+
+        <a class="wiki-page-card" href="Consultant Scope of Work.html">
+          <span class="wpc-tag tag-purple">Scope of Work</span>
+          <div class="wpc-title">Everything The Consultant is responsible for</div>
+          <div class="wpc-desc">6 work domains · 36 scope items · workflow design, knowledge synthesis, SST schema, monitoring UI, agent design, app delivery</div>
+        </a>
+
+        <a class="wiki-page-card" href="Consultant Agent Roster.html">
+          <span class="wpc-tag tag-purple">Agent Roster</span>
+          <div class="wpc-title">All agents required for The Consultant</div>
+          <div class="wpc-desc">1 orchestrator + 7 sub-agents · responsibilities, tools, and domain coverage per agent</div>
+        </a>
+
+        <a class="wiki-page-card" href="Consultant Agent Brief.html">
+          <span class="wpc-tag tag-purple">Solution Brief Registry</span>
+          <div class="wpc-title">Issued briefs, execution status, SST schema</div>
+          <div class="wpc-desc">8 active briefs · LOB lead view, MV team execution view, PostgreSQL schema · filter by LOB, status, scope</div>
+        </a>
+
+        <!-- Skills Wiki -->
+        <a class="wiki-page-card" href="skills-wiki.html">
+          <span class="wpc-tag tag-purple">Skills Wiki</span>
+          <div class="wpc-title">All skills required per sub-agent</div>
+          <div class="wpc-desc">60+ skills · searchable registry with prompt specs, quality criteria, and platform skills</div>
+        </a>
+      </div>
+
+      <div class="wiki-section-meta" style="margin-top:32px; font-size:11px; font-family:var(--font-mono); color:var(--text-tertiary); text-transform:uppercase; letter-spacing:0.1em; border-bottom:0.5px solid var(--border); padding-bottom:8px; margin-bottom:12px;">Agency Doctrine & Rules</div>
+      <div class="page-grid page-grid-4">
+        <a class="wiki-page-card" href="agents/the-consultant/agent.md">
+          <span class="wpc-tag tag-purple">Agency Spec</span>
+          <div class="wpc-title">The Consultant: Identity & Mission</div>
+          <div class="wpc-desc">Core mission, 6 work domains, and primary responsibilities.</div>
+        </a>
+        <a class="wiki-page-card" href="agents/the-consultant/operating-rules.md">
+          <span class="wpc-tag tag-purple">Rules</span>
+          <div class="wpc-title">Operating Rules</div>
+          <div class="wpc-desc">Governing rules: hierarchy, coordination, and audit-driven redesign.</div>
+        </a>
+        <a class="wiki-page-card" href="agents/the-consultant/workflow.md">
+          <span class="wpc-tag tag-purple">Workflow</span>
+          <div class="wpc-title">Design-to-Build Workflow</div>
+          <div class="wpc-desc">7-step process from intake to human-approved delivery bundle.</div>
+        </a>
+        <a class="wiki-page-card" href="agents/the-consultant/subagents.md">
+          <span class="wpc-tag tag-purple">Agents</span>
+          <div class="wpc-title">Sub-agent Definitions</div>
+          <div class="wpc-desc">Detailed roles for IA, WD, KS, SA, UI, BP, and AA.</div>
+        </a>
+      </div>
+
+      </div>
+    </div>
+
+    <!-- ── PRODUCT PLATFORM ── -->
+    <div class="agency" id="product-platform">
+      <div class="agency-header">
+        <div class="agency-color-bar blue-bar" style="background:var(--blue-600)"></div>
+        <div class="agency-name">Product Platform</div>
+        <span class="agency-tag" style="background:var(--blue-50); color:var(--blue-600)">Core Repository</span>
+        <div class="agency-desc">The foundational OpenClaw monorepo providing CLI, UI, Gateway, and 30+ production-ready skills.</div>
+      </div>
+      
+      <div class="page-grid page-grid-4">
+        <a class="wiki-page-card" href="docs/index.md">
+          <span class="wpc-tag" style="background:var(--blue-50); color:var(--blue-600)">Docs</span>
+          <div class="wpc-title">Official Product Docs</div>
+          <div class="wpc-desc">Full Mintlify documentation: channels, providers, nodes, and security.</div>
+        </a>
+        <a class="wiki-page-card" href="src/">
+          <span class="wpc-tag" style="background:var(--blue-50); color:var(--blue-600)">Source</span>
+          <div class="wpc-title">Core Implementation (src)</div>
+          <div class="wpc-desc">TypeScript source for commands, infra, media pipeline, and routing.</div>
+        </a>
+        <a class="wiki-page-card" href="ui/">
+          <span class="wpc-tag" style="background:var(--blue-50); color:var(--blue-600)">Interface</span>
+          <div class="wpc-title">Web & Desktop UI</div>
+          <div class="wpc-desc">React-based interactive views for overview, sessions, and configuration.</div>
+        </a>
+        <a class="wiki-page-card" href="skills/">
+          <span class="wpc-tag" style="background:var(--blue-50); color:var(--blue-600)">Registry</span>
+          <div class="wpc-title">Product Skill Packages</div>
+          <div class="wpc-desc">30+ production skills for integrations (Spotify, Weather, Trello, etc.)</div>
+        </a>
+      </div>
+    </div>
+
+    <!-- ── THE AUDITOR ── -->
+    <div class="agency" id="the-auditor">
+      <div class="agency-header">
+        <div class="agency-color-bar amber-bar"></div>
+        <div class="agency-name">The Auditor</div>
+        <span class="agency-tag tag-amber">Audit agency</span>
+        <div class="agency-desc">Reviews Machine Vision's execution against issued briefs, produces audit findings, detects deviations, and escalates recurrences.</div>
+      </div>
+      <div class="agency-placeholder">
+        Wiki pages for The Auditor coming soon
+      </div>
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>
