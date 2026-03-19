@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MV-OS · Skills Wiki</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --teal-400: #1D9E75; --teal-500: #19896A;
+    --amber-400: #BA7517;
+    --purple-400: #534AB7;
+    --blue-600: #185FA5;
+    --red-400: #E24B4A;
+    --gray-900: #1A1A18; --gray-800: #2C2C2A;
+    --font-head: 'Sora', sans-serif;
+    --font-mono: 'DM Mono', monospace;
+    --line: rgba(255,255,255,0.08);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: var(--font-head);
+    background-color: #0D0D0B;
+    background-image: radial-gradient(circle, rgba(255,255,255,0.04) 1px, transparent 1px);
+    background-size: 24px 24px;
+    color: #fff;
+    min-height: 100vh;
+  }
+
+  /* ── TOPBAR ── */
+  .topbar {
+    background: rgba(26,26,24,0.95);
+    backdrop-filter: blur(8px);
+    color: #fff; padding: 0 36px; height: 52px;
+    display: flex; align-items: center; justify-content: space-between;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .topbar-left { display: flex; align-items: center; gap: 14px; }
+  .topbar-logo { font-size: 13px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: #fff; font-family: var(--font-mono); }
+  .topbar-sep { width: 1px; height: 18px; background: rgba(255,255,255,0.15); }
+  .topbar-subtitle { font-size: 12px; color: rgba(255,255,255,0.4); font-family: var(--font-mono); }
+  .topbar-right { display: flex; align-items: center; gap: 8px; }
+  .tbadge { font-size: 10px; font-family: var(--font-mono); font-weight: 500; padding: 3px 8px; border-radius: 3px; border: 0.5px solid rgba(255,255,255,0.1); }
+  .tbadge-teal { background: rgba(29,158,117,0.2); color: #5DCAA5; border-color: rgba(29,158,117,0.35); }
+
+  /* ── NAV ── */
+  .mvos-nav {
+    background: rgba(44,44,42,0.95);
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    padding: 0 36px;
+    display: flex; align-items: center; gap: 4px;
+    height: 36px;
+  }
+  .mnav-crumb { font-size: 11px; font-family: var(--font-mono); color: rgba(255,255,255,0.3); text-decoration: none; padding: 4px 10px; border-radius: 4px; transition: all 0.12s; }
+  .mnav-crumb:hover { color: rgba(255,255,255,0.6); background: rgba(255,255,255,0.05); }
+  .mnav-arrow { font-size: 10px; color: rgba(255,255,255,0.18); margin: 0 1px; }
+  .mnav-active { font-size: 11px; font-family: var(--font-mono); color: #fff; padding: 4px 10px; border-radius: 4px; background: rgba(255,255,255,0.08); }
+
+  /* ── SEARCH & FILTER ── */
+  .search-section {
+    max-width: 1200px;
+    margin: 40px auto 24px;
+    padding: 0 32px;
+  }
+  .search-bar {
+    display: flex; gap: 12px; align-items: center;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    padding: 12px 20px;
+    margin-bottom: 16px;
+  }
+  .search-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: #fff;
+    font-family: var(--font-head);
+    font-size: 16px;
+    outline: none;
+  }
+  .search-input::placeholder { color: rgba(255,255,255,0.2); }
+
+  .filter-row {
+    display: flex; gap: 10px; flex-wrap: wrap;
+    align-items: center;
+  }
+  .filter-label { font-size: 10px; font-family: var(--font-mono); color: rgba(255,255,255,0.3); text-transform: uppercase; letter-spacing: 0.1em; margin-right: 8px; }
+  .filter-btn {
+    font-size: 11px; font-family: var(--font-mono);
+    padding: 5px 12px;
+    border-radius: 6px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.08);
+    color: rgba(255,255,255,0.5);
+    cursor: pointer; transition: all 0.12s;
+  }
+  .filter-btn:hover { background: rgba(255,255,255,0.1); color: #fff; }
+  .filter-btn.active {
+    background: rgba(29,158,117,0.15);
+    border-color: rgba(29,158,117,0.4);
+    color: #5DCAA5;
+  }
+
+  /* ── SKILLS GRID ── */
+  .skills-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 32px 80px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+    gap: 16px;
+  }
+
+  .skill-card {
+    background: rgba(255,255,255,0.035);
+    border: 1px solid rgba(255,255,255,0.09);
+    border-radius: 14px;
+    padding: 20px;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+  .skill-card:hover {
+    border-color: rgba(29,158,117,0.35);
+    background: rgba(29,158,117,0.04);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+  }
+  .skill-card-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 12px; }
+  .skill-id { font-size: 10px; font-family: var(--font-mono); color: rgba(255,255,255,0.3); margin-bottom: 4px; }
+  .skill-name { font-size: 16px; font-weight: 600; color: #fff; line-height: 1.3; }
+  .skill-type { font-size: 9px; font-family: var(--font-mono); padding: 2px 8px; border-radius: 4px; text-transform: uppercase; }
+
+  .type-read { background: rgba(24,95,165,0.15); color: #7EB9F5; border: 0.5px solid rgba(24,95,165,0.3); }
+  .type-write { background: rgba(29,158,117,0.15); color: #5DCAA5; border: 0.5px solid rgba(29,158,117,0.3); }
+  .type-gen { background: rgba(83,74,183,0.15); color: #AFA9EC; border: 0.5px solid rgba(83,74,183,0.3); }
+  .type-check { background: rgba(186,117,23,0.15); color: #DCA753; border: 0.5px solid rgba(186,117,23,0.3); }
+  .type-route { background: rgba(226,75,74,0.15); color: #F0A0A0; border: 0.5px solid rgba(226,75,74,0.3); }
+
+  .skill-desc { font-size: 12px; color: rgba(255,255,255,0.5); line-height: 1.6; margin-bottom: 16px; min-height: 38px; }
+
+  .skill-meta { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 16px; }
+  .meta-item { background: rgba(255,255,255,0.04); border-radius: 8px; padding: 8px 12px; }
+  .meta-label { font-size: 9px; font-family: var(--font-mono); color: rgba(255,255,255,0.25); text-transform: uppercase; margin-bottom: 4px; }
+  .meta-val { font-size: 11px; color: rgba(255,255,255,0.7); line-height: 1.4; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+  .skill-footer { display: flex; align-items: center; justify-content: space-between; padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.06); }
+  .skill-agent { display: flex; align-items: center; gap: 6px; }
+  .agent-dot { width: 6px; height: 6px; border-radius: 50%; }
+  .agent-name { font-size: 10px; font-family: var(--font-mono); color: rgba(255,255,255,0.4); }
+
+  /* ── MODAL ── */
+  .modal-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.8);
+    backdrop-filter: blur(10px); display: none;
+    align-items: center; justify-content: center; z-index: 1000; padding: 20px;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal-content {
+    background: #141412;
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 20px;
+    width: 100%; max-width: 800px;
+    max-height: 90vh; overflow-y: auto;
+    padding: 40px;
+    position: relative;
+    box-shadow: 0 32px 64px rgba(0,0,0,0.8);
+  }
+  .modal-close {
+    position: absolute; top: 24px; right: 24px;
+    width: 32px; height: 32px; border-radius: 50%;
+    background: rgba(255,255,255,0.05);
+    border: none; color: #fff; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; font-size: 18px;
+  }
+  .modal-section { margin-bottom: 32px; }
+  .modal-label { font-size: 11px; font-family: var(--font-mono); color: rgba(255,255,255,0.3); text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 6px; }
+  .modal-text { font-size: 14px; color: rgba(255,255,255,0.7); line-height: 1.7; }
+  .modal-prompt { font-family: var(--font-mono); font-size: 13px; color: #5DCAA5; background: rgba(29,158,117,0.08); padding: 20px; border-radius: 12px; border-left: 3px solid var(--teal-400); font-style: italic; }
+
+  .criteria-list { display: flex; flex-direction: column; gap: 10px; }
+  .criteria-item { display: flex; gap: 12px; align-items: flex-start; color: rgba(255,255,255,0.6); font-size: 13px; line-height: 1.5; }
+  .criteria-bullet { width: 5px; height: 5px; border-radius: 50%; background: var(--teal-400); margin-top: 7px; flex-shrink: 0; }
+
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="topbar-left">
+    <div class="topbar-logo">MV-OS</div>
+    <div class="topbar-sep"></div>
+    <div class="topbar-subtitle">internal wiki</div>
+  </div>
+  <div class="topbar-right">
+    <div class="tbadge tbadge-teal">Skills v1.1</div>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav class="mvos-nav">
+  <a class="mnav-crumb" href="index.html">MV-OS Wiki</a>
+  <span class="mnav-arrow">›</span>
+  <span class="mnav-active">Skills Wiki</span>
+</nav>
+
+<!-- SEARCH SECTION -->
+<div class="search-section">
+  <div class="search-bar">
+    <span style="font-size:18px; opacity:0.3">🔍</span>
+    <input type="text" id="skillSearch" class="search-input" placeholder="Search by skill name, ID, or description..." onkeyup="filterSkills()">
+  </div>
+  <div class="filter-row">
+    <span class="filter-label">Agency</span>
+    <button class="filter-btn active" data-filter="all" onclick="setAgencyFilter('all', this)">All Agencies</button>
+    <button class="filter-btn" data-filter="CON" onclick="setAgencyFilter('CON', this)">The Consultant</button>
+    <button class="filter-btn" data-filter="MV" onclick="setAgencyFilter('MV', this)">Machine Vision (soon)</button>
+    <button class="filter-btn" data-filter="AUD" onclick="setAgencyFilter('AUD', this)">The Auditor (soon)</button>
+  </div>
+  <div class="filter-row" style="margin-top:12px">
+    <span class="filter-label">Type</span>
+    <button class="filter-btn active" data-type="all" onclick="setTypeFilter('all', this)">All Types</button>
+    <button class="filter-btn" data-type="read" onclick="setTypeFilter('read', this)">Read</button>
+    <button class="filter-btn" data-type="write" onclick="setTypeFilter('write', this)">Write</button>
+    <button class="filter-btn" data-type="gen" onclick="setTypeFilter('gen', this)">Generate</button>
+    <button class="filter-btn" data-type="check" onclick="setTypeFilter('check', this)">Validate</button>
+    <button class="filter-btn" data-type="route" onclick="setTypeFilter('route', this)">Route</button>
+  </div>
+</div>
+
+<!-- SKILLS GRID -->
+<div class="skills-container" id="skillsGrid">
+  <!-- Dynamic content -->
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModal()">
+  <div class="modal-content" onclick="event.stopPropagation()">
+    <button class="modal-close" onclick="closeModal()">×</button>
+    <div id="modalBody"></div>
+  </div>
+</div>
+
+<script>
+const SKILLS_DATA = [
+  /* Consultant Orchestrator */
+  { id:'SK-ORCH-01', agency:'CON', agent:'Consultant Orchestrator', name:'Document intake router', type:'route', desc:'Classifies incoming document by type and routes to the correct sub-agent with full context payload.', input:'Raw incoming document + sender agency', output:'Typed document record + routing instruction', prompt:'Classify the incoming document. Extract: document_type, sender_agency, lob_scope, urgency. Route to the correct sub-agent. If type cannot be determined, generate a clarification request — do not guess.', criteria:['Document type must be one of: RB, Audit Finding, Escalation, Acknowledgement','LOB scope must be classified before routing','Cross-LOB documents flagged for coordination protocol'], quality:'Document type identified with ≥95% accuracy. Missing type triggers clarification, never silent misroute.', color:'#1D9E75' },
+  { id:'SK-ORCH-02', agency:'CON', agent:'Consultant Orchestrator', name:'Approval event detector', type:'read', desc:'Monitors brief status fields. Detects when status transitions to approved. Triggers build pipeline dispatch.', input:'Brief status update event', output:'Dispatch instruction to SST Architect + UI Builder', prompt:'Check the brief record. Confirm: (1) status = approved, (2) consultant_lead_approved_at is set, (3) change_scope = major only if owner_approved_at is also set. If all conditions met, dispatch build pipeline. Otherwise, do nothing.', criteria:['Both consultant_lead_approved_at and (if major) owner_approved_at must be non-null','Dispatch only fires once per version — no duplicate builds','Partial approvals must not trigger dispatch'], quality:'No false triggers. Approval must be human-confirmed. Draft approval never triggers build.', color:'#1D9E75' },
+  { id:'SK-ORCH-03', agency:'CON', agent:'Consultant Orchestrator', name:'Human review gate', type:'route', desc:'Holds completed bundle at review checkpoint. Notifies Consultant Lead. Awaits pass/revise/reject decision.', input:'Completed three-artifact bundle (SOP + SST + UI)', output:'Delivery instruction or revision request back to sub-agents', prompt:'A bundle is ready for review. Notify the Consultant Lead with: brief_number, version, SOP summary, SST table count, UI view list, and any open items. Present pass / revise / reject options. Log the decision with timestamp and reviewer ID.', criteria:['All three artifacts must be present before gate opens','Reviewer identity must be recorded','Revision triggers a targeted re-dispatch, not a full rebuild'], quality:'No bundle leaves the agency without recorded human sign-off. Review notification must include all three artifacts in readable preview format.', color:'#1D9E75' },
+  { id:'SK-ORCH-04', agency:'CON', agent:'Consultant Orchestrator', name:'Inter-agency message dispatcher', type:'route', desc:'Sends and receives documents to/from MV Orchestrator and Auditor Orchestrator with acknowledgement tracking.', input:'Approved bundle + recipient agency', output:'Sent document record + acknowledgement tracking entry', prompt:'Dispatch the document to the recipient agency orchestrator. Attach: message_id, sender_agency, document_type, document_version, timestamp. Await acknowledgement. If no ack within SLA, escalate to retry queue.', criteria:['Message ID must be unique and logged','Delivery SLA: acknowledgement within 24h','Failed delivery routes to escalation queue, not silent failure'], quality:'Every outbound document has a unique message ID. No document marked delivered until acknowledgement received.', color:'#1D9E75' },
+
+  /* Intake Analyst */
+  { id:'SK-IA-01', agency:'CON', agent:'Intake Analyst', name:'RB field validator', type:'check', desc:'Checks all required Requirement Brief fields are present, typed correctly, and sufficiently detailed.', input:'Raw Requirement Brief from MV', output:'Validated intake record or field-level clarification request', prompt:'Validate this Requirement Brief against the RB schema. Required fields: situation, pain_point, business_impact, urgency, lob_scope, constraints, submitted_by, date. For each missing or ambiguous field, generate a specific question. Return either a validated intake record or a clarification request listing gaps.', criteria:['All 8 fields must be present and non-empty','urgency must be one of: immediate / high / standard / low','lob_scope must be classifiable — cross-LOB must be explicitly flagged'], quality:'All 8 required RB fields checked. Partial briefs never passed downstream. Specific field-level feedback returned to MV, not generic rejection.', color:'#1D9E75' },
+  { id:'SK-IA-02', agency:'CON', agent:'Intake Analyst', name:'LOB scope classifier', type:'check', desc:'Maps the problem description to one or more LOBs. Flags cross-LOB coordination requirement automatically.', input:'Validated RB intake record', output:'LOB classification tag + cross-LOB flag if applicable', prompt:'Read the pain_point and situation fields. Classify the primary LOB scope: consulting (feasibility, lean, OpEx), software (dev, reusable services, smart manufacturing), automation (PLC, SCADA, electrical, mechanical). If the problem spans 2+ LOBs, set cross_lob = true and list all affected LOBs. Explain your classification in one sentence.', criteria:['Classification must reference specific keywords from the brief','Cross-LOB flag must list all affected LOBs by name','Ambiguous classification routes to human clarification, not a guess'], quality:'Single LOB classification for 90%+ of briefs. Cross-LOB flag triggers coordination protocol automatically — never silently assigned to one LOB.', color:'#1D9E75' },
+
+  /* Workflow Designer */
+  { id:'SK-WD-01', agency:'CON', agent:'Workflow Designer', name:'SOP drafter', type:'gen', desc:'Produces a structured SOP from the intake record. Covers normal flow, exception flow, and escalation triggers.', input:'Validated intake record + relevant library SOPs', output:'Draft SOP with steps, exception handling, escalation triggers', prompt:'Draft a Standard Operating Procedure for this workflow. Structure: (1) Purpose, (2) Scope and LOB, (3) Normal flow — numbered steps each with: step description, role owner, inputs required, outputs produced, (4) Exception flow — what happens when step fails or input is missing, (5) Escalation triggers — conditions that require human or Owner intervention. Apply lean principles: flag any step that does not add direct value.', criteria:['Minimum 3 and maximum 12 steps for a minor change SOP','Every step must have a named role owner','At least one exception path and one escalation trigger defined'], quality:'Every step has a named owner (role, not person). Exception flows cover: missing input, blocked step, escalation condition. No NVA steps without justification.', color:'#1D9E75' },
+  { id:'SK-WD-02', agency:'CON', agent:'Workflow Designer', name:'Change scope classifier', type:'check', desc:'Determines whether a workflow change is Major (Owner approval required) or Minor. Produces classification rationale.', input:'Draft SOP + change description', output:'change_scope tag (major/minor) + written rationale', prompt:'Classify this workflow change as major or minor. Major criteria: affects more than one LOB, introduces a new role or authority level, changes an escalation path, requires budget or resource allocation, reverses a previously Owner-approved decision. Minor criteria: refines an existing step, adds clarity without changing authority or scope. State which criteria apply. If borderline, classify as major.', criteria:['At least one major criterion must be checked before assigning minor','Borderline cases default to major','Rationale must be one paragraph minimum'], quality:'Classification must reference at least one specific criterion. Never default to minor without checking all major criteria.', color:'#1D9E75' },
+  { id:'SK-WD-03', agency:'CON', agent:'Workflow Designer', name:'Workflow library searcher', type:'read', desc:'Semantic search over the approved SOP library to find existing workflows before drafting from scratch.', input:'Intake record keywords + LOB classification', output:'Top 3 relevant SOPs with similarity score and delta notes', prompt:'Search the workflow library for SOPs related to: {keywords} in LOB: {lob_scope}. Return: top 3 matches with (1) SOP ID and title, (2) similarity rationale, (3) key differences from current requirement. If similarity > 80%, recommend revising the existing SOP. If < 40%, recommend new SOP creation.', criteria:['Library must be queried before any new SOP is drafted','>80% similarity triggers revision recommendation, not new creation','Returned matches must include version number and last-updated date'], quality:'Must query library before drafting any new SOP. If a relevant SOP exists with >80% overlap, recommend revision over new creation.', color:'#1D9E75' },
+
+  /* Knowledge Synthesizer */
+  { id:'SK-KS-01', agency:'CON', agent:'Knowledge Synthesizer', name:'Audit finding integrator', type:'read', desc:'Reads relevant Audit Findings for the current LOB. Identifies corrective clauses to add to the SOP draft.', input:'Draft SOP + LOB scope', output:'Annotated SOP draft with finding-referenced corrective clauses', prompt:'Query audit findings for LOB: {lob_scope} in the last 24 months. For each finding with severity Major or Critical: identify which SOP step it relates to and draft a corrective action. Format each clause as: [AF-ID] — corrective action. If no relevant findings, state explicitly: no findings affect this workflow area.', criteria:['Only findings with severity Major or Critical generate mandatory clauses','Observation findings may be noted but not required','Every clause must reference a specific finding ID'], quality:'Every corrective clause must cite its source finding ID. Findings older than 12 months flagged as historical. No clause added without traceable evidence.', color:'#534AB7' },
+  { id:'SK-KS-02', agency:'CON', agent:'Knowledge Synthesizer', name:'Recurrence pattern detector', type:'read', desc:'Cross-references the current workflow area against historical findings to detect recurring deviations.', input:'Current workflow area + findings history', output:'Recurrence report — flagged patterns + escalation recommendation if threshold met', prompt:'Scan the findings history for this workflow area. Group findings by deviation type. For any deviation type appearing 2 or more times in the last 18 months: (1) name the pattern, (2) list the finding IDs, (3) draft a root cause hypothesis, (4) recommend a preventive SOP clause or escalation to Owner if systemic.', criteria:['Threshold: 2+ occurrences in 18 months = flag','Each flagged pattern must have a named hypothesis','Systemic patterns (3+) must be escalated, not just noted'], quality:'Recurrence threshold: same deviation type in same LOB 2+ times in 18 months = escalate. Pattern must be named and described, not just counted.', color:'#534AB7' },
+  { id:'SK-KS-03', agency:'CON', agent:'Knowledge Synthesizer', name:'Rationale writer', type:'gen', desc:'Produces the rationale block for every Solution Brief: why this approach, what alternatives, what evidence.', input:'Final SOP draft + finding citations + designer notes', output:'Rationale block (3–5 paragraphs, Auditor-readable)', prompt:'Write the rationale block for this Solution Brief. Cover: (1) Problem restatement in Consultant terms, (2) Why the recommended workflow addresses the root cause, not just symptoms, (3) What alternative approaches were considered and why rejected, (4) What audit evidence or library precedent supports this approach, (5) What outcome this creates for Machine Vision if executed correctly. Write for an Auditor audience — specific, evidence-referenced, no generics.', criteria:['Minimum 3 paragraphs','At least one piece of evidence cited (finding ID or library SOP reference)','Alternatives section cannot be empty'], quality:'Must address: why this solution, what alternatives rejected, what evidence supports the approach. Generic rationale without evidence fails quality gate.', color:'#534AB7' },
+
+  /* SST Architect */
+  { id:'SK-SA-01', agency:'CON', agent:'SST Architect', name:'Entity modeler', type:'gen', desc:'Derives database entities and typed columns from SOP field definitions. Applies 3NF normalization.', input:'Approved SOP with all field definitions', output:'Entity list with columns, types, nullability, defaults', prompt:'Read the SOP and identify all data entities and their fields. For each entity: (1) name the table in snake_case plural, (2) list all columns with PostgreSQL type, nullability, and default value, (3) identify the primary key (always UUID), (4) identify all status fields — these must be VARCHAR with CHECK constraints listing valid states, (5) apply 3NF: extract lookup values into reference tables.', criteria:['Every SOP field must appear as a column','All status fields use VARCHAR + CHECK, never ENUM','Base columns required on every table: id UUID PK, created_at, updated_at, created_by FK'], quality:'All SOP fields must map to a column. No untyped columns. 3NF: no repeating groups, no transitive dependencies.', color:'#185FA5' },
+  { id:'SK-SA-02', agency:'CON', agent:'SST Architect', name:'State machine designer', type:'gen', desc:'Maps every status field to a valid state transition graph with trigger conditions and role permissions.', input:'Entity model with status fields', output:'State transition map per status field + constraint rules', prompt:'For each status field in the schema: (1) list all valid states, (2) draw the allowed transitions as: from_state → to_state (trigger condition) (who can trigger), (3) identify terminal states (no outbound transitions), (4) identify the initial state. Flag any transition that would violate workflow logic. Output as a transition table.', criteria:['Every state must have at least one inbound transition (except initial)','Every state must have at least one outbound transition (except terminal)','Trigger conditions must name a role or system event, not just "when ready"'], quality:'Every status transition must be explicitly listed. No implicit transitions. Every transition must have a named trigger condition.', color:'#185FA5' },
+  { id:'SK-SA-03', agency:'CON', agent:'SST Architect', name:'SQL DDL generator', type:'gen', desc:'Produces complete runnable PostgreSQL CREATE TABLE scripts with extensions, indexes, FK constraints, and triggers.', input:'Validated entity model + relationship map', output:'Runnable .sql DDL file', prompt:'Generate a complete PostgreSQL DDL script. Include in order: (1) CREATE EXTENSION IF NOT EXISTS pgcrypto, (2) CREATE TABLE statements in FK dependency order, (3) CHECK constraints on all enumerated fields, (4) FK constraints with ON DELETE behavior stated, (5) CREATE INDEX for status, lob_scope, and date-range query fields, (6) updated_at trigger function and trigger binding for each table.', criteria:['Tables must appear in FK dependency order','Every FK must specify ON DELETE behavior','updated_at trigger must be applied to every table'], quality:'Script must run without errors on a clean PostgreSQL 14+ instance. Includes pgcrypto, all tables in dependency order, indexes, updated_at trigger.', color:'#185FA5' },
+
+  /* UI Builder */
+  { id:'SK-UI-01', agency:'CON', agent:'UI Builder', name:'LOB Lead view builder', type:'gen', desc:'Builds the full registry view for LOB Leads: stat strip, filter bar, sortable table, badges, click-to-detail.', input:'SST schema + approved SOP field list + sample data', output:'Complete HTML/CSS/JS LOB Lead view', prompt:'Build the LOB Lead monitoring view for this workflow. Include: (1) stat strip showing counts per status value from the SST schema, (2) filter bar with search input and dropdowns for each enumerated field, (3) sortable table with all key fields, (4) status badges using MV-OS color system: teal=active/issued, amber=pending, red=escalated, gray=closed/draft, (5) click-to-detail row interaction. Bind all data fields to SST column names exactly.', criteria:['Every status value in the SST CHECK constraint must have a badge style','All filter dropdown values must match SST CHECK constraint enumerations','Field names in JS data objects must match SST column names exactly'], quality:'Stat strip must reflect live data. All status values must have badge styles. Filters must match enumerated field values exactly.', color:'#3C3489' },
+  { id:'SK-UI-02', agency:'CON', agent:'UI Builder', name:'MV team execution view builder', type:'gen', desc:'Builds the compact execution panel for MV team members: task cards, current step, progress, blockers.', input:'SST schema + implementation steps table + sample data', output:'Complete HTML/CSS/JS MV team execution view', prompt:'Build the MV team execution view. Include: (1) summary stats: assigned count, overdue count, completed this month, (2) task cards in a 2-column grid — each showing: brief_number, status badge, recommended_workflow truncated, LOB tag, step count, progress bar derived from completed steps / total steps, (3) blocked items use amber accent, (4) click opens full detail panel.', criteria:['Only in_execution, acknowledged, issued items shown','Progress bar must be computed from step statuses, not hardcoded','Blocked step status must have distinct visual treatment'], quality:'View must only show items relevant to execution. Each card shows step count and current step. Blocked items visually distinct.', color:'#3C3489' },
+  { id:'SK-UI-03', agency:'CON', agent:'UI Builder', name:'Design system enforcer', type:'check', desc:'Validates a generated UI against the MV-OS design token set. Checks typography, colors, and SST field binding.', input:'Generated HTML/CSS UI artifact', output:'Validation report — pass or violation list with fixes', prompt:'Audit this UI artifact against the MV-OS design system. Check: (1) no hardcoded hex colors — all colors use CSS variables or MV-OS palette tokens, (2) typography: Sora for body/headings, DM Mono for monospaced elements, (3) status color mapping: issued=teal, pending/major=amber, escalated=red, draft/closed=gray, (4) all data field names in JS match SST column names exactly, (5) border-radius uses --radius-md or --radius-lg. Return: pass or violation list with line references and fixes.', criteria:['Zero hardcoded colors is a hard requirement — not advisory','Field name mismatches fail the gate — not a warning','Typography violations must be fixed before bundle is assembled'], quality:'Zero hardcoded colors outside CSS variables. Font usage: Sora for headings/labels, DM Mono for IDs/codes/badges.', color:'#3C3489' },
+
+  /* Brief Publisher */
+  { id:'SK-BP-01', agency:'CON', agent:'Brief Publisher', name:'COS document assembler', type:'gen', desc:'Assembles the final SOP document applying the Consultant Output Standard format with all required fields.', input:'SOP draft + rationale block + change scope + metadata', output:'COS-compliant Solution Brief document v1.0', prompt:'Assemble the final Solution Brief document. Apply COS v1.0 standard. Required header fields: Document Type = Solution Brief, Originating Agency = The Consultant, Receiving Agency = Machine Vision, Date = today, Version = {version}. Required body fields: brief_number, problem_statement, recommended_workflow, rationale, implementation_steps (numbered), expected_outcome, open_items (if any). If any required field is missing, halt and return a gap report — do not assemble an incomplete document.', criteria:['All 12 required fields must be present and non-empty','Version must follow semver-style: 1.0, 1.1, 1.2','Halt on any missing field — never produce a partial document'], quality:'All required COS fields present. No field left blank. Halt on any missing field — never produce a partial document.', color:'#1D9E75' },
+  { id:'SK-BP-02', agency:'CON', agent:'Brief Publisher', name:'Bundle packager', type:'write', desc:'Packages the three artifacts (SOP, SST schema, monitoring UI) into a versioned delivery bundle for human review.', input:'COS document + DDL script + UI artifact', output:'Versioned bundle manifest + three artifact files', prompt:'Package the three artifacts into a Solution Brief bundle. Create a bundle manifest with: bundle_id, brief_number, version, date, (1) SOP document — title, version, field count, (2) SST schema — table count, column count, DDL line count, (3) Monitoring UI — view count, field bindings verified. If any artifact is missing, return: bundle_incomplete with list of what is missing.', criteria:['All three artifacts must be present — no partial bundles','Bundle manifest must include artifact version numbers','Field binding verification must be completed before packaging'], quality:'Bundle is incomplete if any of the three artifacts is missing. Incomplete bundle must not reach review gate.', color:'#1D9E75' },
+];
+
+let currentAgency = 'all';
+let currentType = 'all';
+
+function setAgencyFilter(agency, btn) {
+  currentAgency = agency;
+  document.querySelectorAll('[data-filter]').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderSkills();
+}
+
+function setTypeFilter(type, btn) {
+  currentType = type;
+  document.querySelectorAll('[data-type]').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderSkills();
+}
+
+function filterSkills() {
+  renderSkills();
+}
+
+function renderSkills() {
+  const query = document.getElementById('skillSearch').value.toLowerCase();
+  const filtered = SKILLS_DATA.filter(s => {
+    const matchesQuery = s.name.toLowerCase().includes(query) || s.id.toLowerCase().includes(query) || s.desc.toLowerCase().includes(query);
+    const matchesAgency = currentAgency === 'all' || s.agency === currentAgency;
+    const matchesType = currentType === 'all' || s.type === currentType;
+    return matchesQuery && matchesAgency && matchesType;
+  });
+
+  const grid = document.getElementById('skillsGrid');
+  grid.innerHTML = filtered.map((s, idx) => `
+    <div class="skill-card" onclick="openSkill('${s.id}')">
+      <div class="skill-card-top">
+        <div>
+          <div class="skill-id">${s.id}</div>
+          <div class="skill-name">${s.name}</div>
+        </div>
+        <span class="skill-type type-${s.type}">${s.type}</span>
+      </div>
+      <div class="skill-desc">${s.desc}</div>
+      <div class="skill-meta">
+        <div class="meta-item">
+          <div class="meta-label">Input</div>
+          <div class="meta-val">${s.input}</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-label">Output</div>
+          <div class="meta-val">${s.output}</div>
+        </div>
+      </div>
+      <div class="skill-footer">
+        <div class="skill-agent">
+          <div class="agent-dot" style="background:${s.color}"></div>
+          <div class="agent-name">${s.agent}</div>
+        </div>
+        <div style="font-size:10px; opacity:0.3; font-family:var(--font-mono)">v1.0</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function openSkill(id) {
+  const skill = SKILLS_DATA.find(s => s.id === id);
+  const modalBody = document.getElementById('modalBody');
+  modalBody.innerHTML = `
+    <div class="modal-section" style="margin-top:-10px">
+      <div class="skill-id" style="font-size:12px; margin-bottom:8px">${skill.id} · ${skill.agent}</div>
+      <h2 style="font-size:28px; font-weight:600; margin-bottom:12px">${skill.name}</h2>
+      <p class="modal-text">${skill.desc}</p>
+    </div>
+
+    <div class="modal-section">
+      <div class="modal-label">Core Prompt Instruction</div>
+      <div class="modal-prompt">"${skill.prompt}"</div>
+    </div>
+
+    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:32px;">
+      <div class="modal-section">
+        <div class="modal-label">Quality Criteria</div>
+        <div class="criteria-list">
+          ${skill.criteria.map(c => `
+            <div class="criteria-item">
+              <div class="criteria-bullet"></div>
+              <div>${c}</div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+      <div class="modal-section">
+        <div class="modal-label">Quality Gate Standard</div>
+        <div class="modal-text" style="color:#AFA9EC">${skill.quality}</div>
+      </div>
+    </div>
+  `;
+  document.getElementById('modalOverlay').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('open');
+}
+
+// Initial render
+renderSkills();
+</script>
+
+</body>
+</html>
